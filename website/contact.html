@@ -1,24 +1,40 @@
 <!-- CONTACT -->
 
 <!DOCTYPE html>
+<html lang="en">
 
-<html>
-    <head>
-        <title>Contact Me</title>
-        <link rel="stylesheet" href="assets/style.css">
-    </head>
+<head>
+    <link rel="stylesheet" href="assets/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Emma Maloney</title>
+</head>
+<body>
 
-    <body>
-        <h1>Contact Me</h1>
-        <hr />
+<!-- HEADER -->
+<div id="header-placeholder"></div>
 
-        <h2>Contact</h2>
-        <ul>
-            <li>Email: <a href="mailto:emma.maloney.work@gmail.com">emma.maloney.work@gmail.com</a></li>
-            <li>LinkedIn: <a href="https://linkedin.com/in/emma-maloney-92b212228" target="_blank">
-                linkedin.com/in/emma-maloney-92b212228</a></li>
-            <li>GitHub: <a href="https://github.com/emmamaloney" target="_blank">github.com/emmamaloney</a></li>
-        </ul>
-    </body>
+<script>
+fetch('elements/header.html')
+  .then(response => response.text())
+  .then(data => {
+    document.getElementById('header-placeholder').innerHTML = data;
+  })
+  .catch(error => console.error('Error loading header:', error));
+</script>
+
+
+<body>
+    <h1>Contact Me</h1>
+    <hr />
+
+    <h2>Contact</h2>
+    <ul>
+        <li>Email: <a href="mailto:emma.maloney.work@gmail.com">emma.maloney.work@gmail.com</a></li>
+        <li>LinkedIn: <a href="https://linkedin.com/in/emma-maloney-92b212228" target="_blank">
+            linkedin.com/in/emma-maloney-92b212228</a></li>
+        <li>GitHub: <a href="https://github.com/emmamaloney" target="_blank">github.com/emmamaloney</a></li>
+    </ul>
+</body>
 
 </html>
