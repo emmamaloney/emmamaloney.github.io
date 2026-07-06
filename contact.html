@@ -2,21 +2,77 @@
 <html lang="en">
 
 <head>
-    <link rel="stylesheet" href="assets/style.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact - Emma Maloney</title>
+    <title>Emma Maloney – Contact</title>
+    <meta charset="utf-8">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="assets/css/all.min.css">
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="assets/css/album.css">
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Xanh+Mono:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Xanh+Mono:ital@0;1&display=swap" rel="stylesheet">
 </head>
 <body>
+    <header class="header-design sticky-top py-2 shadow-sm"> <!-- Bootstrap sticky top -->
+        <div class="container d-flex align-items-center justify-content-between">
+            <a href="index.html" class="logo text-decoration-none text-nowrap">Emma Maloney</a>
+            
+            <nav class="d-flex nav-menu">
+                <ul class="d-flex list-unstyled gap-3 m-0">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="education.html">Education</a></li>
+                    <li><a href="contact.html" class="active">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-<!-- HEADER -->
-<div id="header-placeholder"></div>
+    <main class="container">
+        <h1>Contact</h1>
+        <p>Don't hesistate to reach out! My inbox is always open.</p>
 
-<script>
-fetch('elements/header.html')
-  .then(response => response.text())
-  .then(data => {
-    document.getElementById('header-placeholder').innerHTML = data;
-  })
-  .catch(error => console.error('Error loading header:', error));
-</script>
+        <h2>Ways to connect</h2>
+
+        Currently in: Stockholm, Sweden. 
+
+        <h2>Leave a message</h2>
+        
+
+        <!--contact form -->
+        <form action="https://formspree.io/f/mgojpjbp" method="POST">
+            <input type="hidden" name="_next" value="https://emmamaloney.com/form-feedback.html">
+            
+            <label for="name" class="form-label">Name:</label><br>
+            <input type="text" class="form-input" name="name" id="name"><br><br>
+            
+            <label for="email" class="form-label">Email:</label><br>
+            <input type="email" class="form-input" name="email" id="email" required><br><br>
+            
+            <label for="message" class="form-label">Message:</label><br>
+            <textarea id="message" class="form-textarea" name="message"></textarea><br><br>
+
+            <input type="submit" class="form-button" value="Submit">
+        </form>
+    </main>
+
+    <footer class="footer-design border-top py-2">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center text-nowrap">
+                <p class="m-0">&copy; 2026 Emma Maloney</p>
+                <a href="#"><i class="fa-solid fa-arrow-up"></i>Back to top</a>   
+            </div>
+            <ul class="d-flex list-unstyled m-0 gap-3 mt-1">
+                <li><a href="mailto:emma.maloney.work@gmail.com">Email</a></li>
+                <li><a href="https://www.linkedin.com/in/emma-maloney-92b212228" target="_blank">LinkedIn</a></li><!-- opens new tab -->
+                <li><a href="https://github.com/emmamaloney" target="_blank">GitHub</a></li> <!-- opens new tab -->
+            </ul> 
+        </div>
+    </footer>
+</body>
+</html>
