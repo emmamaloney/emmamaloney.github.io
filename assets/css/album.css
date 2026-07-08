@@ -1,10 +1,9 @@
 :root { /* variables chosen here for easier modification */
     /* colour palette (c = colour) */
     --c1: #fbfaf9; 
-    --c2: #409162;
-    --c3: #b3bfca;
-    --c4: #1d69ab; 
-    --c5: #113a5d;
+    --c2: #b3bfca;
+    --c3: #1d69ab; 
+    /* + black */
 
     /* fonts (f = font) */
     --f1: "Xanh Mono", serif;
@@ -14,9 +13,12 @@
 body {
     background-color: var(--c1);
     font-family: var(--f2);
+    
 }
 
-h1, h2 {
+/* Headings --------------------------------------------------------- */
+
+h1, h2, h3 {
     font-family: var(--f1); 
 }
 
@@ -31,7 +33,11 @@ h2 {
     font-size: 2rem;
 }
 
-/* Header + Nav */
+h3 {
+    margin: 1.2rem 0rem 0.7rem 0rem;
+}
+
+/* Header + Nav --------------------------------------------------------- */
 
 .header-design {
     background-color: var(--c1);
@@ -39,17 +45,17 @@ h2 {
 
 .logo {
     font-style: italic;
-    color: var(--c5);
+    color:black;
     font-size: 1.5rem;
 }
 
 .nav-menu a {
     font-size: 1.2rem;
-    color: var(--c3);
+    color: var(--c2);
 }
 
 .nav-menu a:hover {
-    color: var(--c4);
+    color: var(--c3);
 }
 
 .nav-menu a:not(.active)::before {
@@ -57,7 +63,7 @@ h2 {
 }
 
 .nav-menu a.active {
-    color: var(--c4);
+    color: var(--c3);
     margin: 5px;
 }
 
@@ -67,7 +73,7 @@ h2 {
 }
 
 
-/* Hero section */
+/* Hero section --------------------------------------------------------- */
 
 .hero-section {
     width:100%;
@@ -88,6 +94,7 @@ h2 {
 
 .hero-content {
     position: absolute; /* position on top of hero image */
+    
     /* move content to (true) center */
     top: 50%;
     left: 50%;
@@ -98,22 +105,103 @@ h2 {
     color:#fbfaf9;
 }
 
+/* First page bio  --------------------------------------------------------- */
 
-/* Contact form */
+.fibonacci-layout {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+}
+
+.fibonacci-img-part {
+    flex-basis: 38.2%; /* Smaller Fibonacci part */
+}
+
+.fibonacci-img {
+    border-radius: 8px;
+}
+
+.fibonacci-text-part {
+    flex-basis: 61.8%; /* Larger Fibonacci part */
+}
+
+
+@media (max-width: 768px) { /* on the phone */
+    .fibonacci-layout {
+        flex-direction: column; /* hamburger stacking on phone */
+        align-items: center; 
+    }
+}
+
+
+
+/* Contact form  --------------------------------------------------------- */
+
+.form-input, textarea {
+    width: 100%;
+}
+
+.form-label {
+    font-family: var(--f1);
+}
+
+textarea {
+    height: 8rem;
+    resize: vertical; /* can only change size of box vertically */
+}
 
 .form-button {
-    background-color: var(--c4);
+    background-color: var(--c3);
 
     font-family: var(--f1);
     color: var(--c1);
 
     border: none;
     border-radius: 8px;
-    
+
     padding: 0.2rem 0.7rem 0.2rem 0.7rem; 
 }
 
-/* Main */
+/* Accordian / Dropdown menu  --------------------------------------------------------- */
+
+.drop-down {
+    color: black;
+    
+    padding: 0.3rem;
+
+    border: 1px solid var(--c2);
+    border-radius: 8px;
+}
+
+.drop-down > summary {
+    list-style: none;
+    cursor: pointer;
+}
+
+/* Badges ---------------------------------------------------------  */
+
+.badge-design {
+    background-color: var(--c2);
+    
+    font-family: var(--f1);
+    font-size: 1rem;
+    color: var(--c1);
+
+    padding: 0.5rem 1rem;
+}
+
+
+/* Main --------------------------------------------------------- */
+
+section {
+    margin: 1.25rem 0rem;
+}
+
+p a, li a {
+    color: var(--c3);
+    text-decoration: none;
+}
 
 
 /* Footer */
@@ -124,10 +212,10 @@ footer {
 }
 
 footer a {
-    color: var(--c4);
+    color: var(--c3);
     text-decoration: none;
 }
 
 .footer-design {
-    border-top: 1px solid var(--c3);
+    border-top: 1px solid var(--c2);
 }
