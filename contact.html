@@ -14,7 +14,6 @@
     <!-- Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Xanh+Mono:ital@0;1&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Xanh+Mono:ital@0;1&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -26,7 +25,7 @@
                 <ul class="d-flex list-unstyled gap-3 m-0">
                     <li><a href="index.html">Home</a></li>
                     <li><a href="about.html">About</a></li>
-                    <li><a href="education.html">Education</a></li>
+                    <li><a href="credentials.html">Credentials</a></li>
                     <li><a href="contact.html" class="active">Contact</a></li>
                 </ul>
             </nav>
@@ -35,30 +34,38 @@
 
     <main class="container">
         <h1>Contact</h1>
-        <p>Don't hesistate to reach out! My inbox is always open.</p>
+        <p>Don't hesitate to reach out! </p>
 
-        <h2>Ways to connect</h2>
+        <section>
+            <h2>Ways to connect</h2>
+            <p>You can reach me directly via email at <a href="mailto:emma.maloney.work@gmail.com">emma.maloney.work@gmail.com</a>, use the form below, or find me on <a href="https://www.linkedin.com/in/emma-maloney-92b212228" target="_blank">LinkedIn</a>.</p>
+            <p>I am currently based in Stockholm, Sweden, and I'm always happy to meet up for a coffee and a chat!</p>
+        </section>
+         
+        <section>
+            <h2>Leave a message</h2>
 
-        Currently in: Stockholm, Sweden. 
+            <!--contact form -->
+            <form class="card shadow-sm p-4">
+                <div class="mb-4">
+                    <label for="name" class="form-label">Name:</label><br>
+                    <input type="text" class="form-input" name="name" id="name">
+                </div>
 
-        <h2>Leave a message</h2>
+                <div class="mb-4">
+                    <label for="email" class="form-label">Email:</label><br>
+                    <input type="email" class="form-input" name="email" id="email" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="message" class="form-label">Message:</label><br>
+                    <textarea id="message" class="form-textarea" name="message"></textarea>
+                </div>
+            
+                <input type="submit" class="form-button" value="Submit">
+            </form>
+        </section>
         
-
-        <!--contact form -->
-        <form action="https://formspree.io/f/mgojpjbp" method="POST">
-            <input type="hidden" name="_next" value="https://emmamaloney.com/form-feedback.html">
-            
-            <label for="name" class="form-label">Name:</label><br>
-            <input type="text" class="form-input" name="name" id="name"><br><br>
-            
-            <label for="email" class="form-label">Email:</label><br>
-            <input type="email" class="form-input" name="email" id="email" required><br><br>
-            
-            <label for="message" class="form-label">Message:</label><br>
-            <textarea id="message" class="form-textarea" name="message"></textarea><br><br>
-
-            <input type="submit" class="form-button" value="Submit">
-        </form>
     </main>
 
     <footer class="footer-design border-top py-2">
