@@ -2,7 +2,8 @@
 <html lang="en">
 
 <head>
-    <title>Emma Maloney – Contact</title>
+    <title>Emma Maloney – Message received</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
@@ -21,7 +22,10 @@
         <div class="container d-flex align-items-center justify-content-between">
             <a href="index.html" class="logo text-decoration-none text-nowrap">Emma Maloney</a>
             
-            <nav class="d-flex nav-menu">
+            <input type="checkbox" id="menu-toggle"> <!-- Hidden checkbox -->
+            <label class="hamburger" for="menu-toggle">☰</label> <!-- Hamburger toggle -->
+
+            <nav class="nav-menu">
                 <ul class="d-flex list-unstyled gap-3 m-0">
                     <li><a href="index.html">Home</a></li>
                     <li><a href="about.html">About</a></li>
@@ -33,7 +37,10 @@
     </header>
 
     <main class="container">
-        <h1>Message received!</h1>
+        <section class="form-feedback-info"> 
+            <h1>Message received!</h1>
+            <button class="button-design" onclick="history.back()">Return to previous page</button>
+        </section>
     </main>
 
     <footer class="footer-design border-top py-2">

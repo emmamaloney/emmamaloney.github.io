@@ -4,6 +4,7 @@
 <head>
     <title>Emma Maloney – Contact</title>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <!-- Font Awesome CSS -->
@@ -21,7 +22,10 @@
         <div class="container d-flex align-items-center justify-content-between">
             <a href="index.html" class="logo text-decoration-none text-nowrap">Emma Maloney</a>
             
-            <nav class="d-flex nav-menu">
+            <input type="checkbox" id="menu-toggle"> <!-- Hidden checkbox -->
+            <label class="hamburger" for="menu-toggle">☰</label> <!-- Hamburger toggle -->
+
+            <nav class="nav-menu">
                 <ul class="d-flex list-unstyled gap-3 m-0">
                     <li><a href="index.html">Home</a></li>
                     <li><a href="about.html">About</a></li>
@@ -33,9 +37,11 @@
     </header>
 
     <main class="container">
-        <h1>Contact</h1>
-        <p>Don't hesitate to reach out! </p>
-
+        <section>
+            <h1>Contact</h1>
+            <p>Don't hesitate to reach out! </p>
+        </section>
+        
         <section>
             <h2>Ways to connect</h2>
             <p>You can reach me directly via email at <a href="mailto:emma.maloney.work@gmail.com">emma.maloney.work@gmail.com</a>, use the form below, or find me on <a href="https://www.linkedin.com/in/emma-maloney-92b212228" target="_blank">LinkedIn</a>.</p>
@@ -61,8 +67,8 @@
                     <label for="message" class="form-label">Message:</label><br>
                     <textarea id="message" class="form-textarea" name="message"></textarea>
                 </div>
-            
-                <input type="submit" class="form-button" value="Submit">
+        
+                <input type="submit" class="button-design" onclick="window.location.href='form-feedback.html';return false;" value="Submit">
             </form>
         </section>
         
