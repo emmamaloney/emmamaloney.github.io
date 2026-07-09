@@ -8,12 +8,14 @@
     /* fonts (f = font) */
     --f1: "Xanh Mono", serif;
     --f2: "Open Sans", sans-serif;
+
+    --radius: 8px;
 }
 
 body {
     background-color: var(--c1);
     font-family: var(--f2);
-    
+    line-height: 1.5;
 }
 
 /* Headings --------------------------------------------------------- */
@@ -29,12 +31,13 @@ h1 {
 }
 
 h2 {
-    margin: 1.5rem 0rem 1rem 0rem;
+    margin: 2rem 0rem 1rem 0rem;
     font-size: 2rem;
 }
 
 h3 {
-    margin: 1.2rem 0rem 0.7rem 0rem;
+    margin: 1.5rem 0rem 0.7rem 0rem;
+    font-size: 1.4rem;
 }
 
 /* Header + Nav --------------------------------------------------------- */
@@ -43,11 +46,18 @@ h3 {
     background-color: var(--c1);
 }
 
+.logo, .nav-menu a {
+    font-family: var(--f1);
+    text-decoration: none;
+}
+
 .logo {
     font-style: italic;
     color:black;
     font-size: 1.5rem;
 }
+
+/* nav links */
 
 .nav-menu a {
     font-size: 1.2rem;
@@ -67,9 +77,48 @@ h3 {
     margin: 5px;
 }
 
-.logo, .nav-menu a {
-    font-family: var(--f1);
-    text-decoration: none;
+/* in prep. for hamburger nav system */
+
+#menu-toggle, .hamburger { 
+    display: none; /* hide checkbox */
+}
+
+/* hamburger menu when on phone */
+
+@media (max-width: 768px) { /* when on phone */
+
+    .header-design .container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hamburger {
+        display: flex;
+        cursor: pointer; /* show it is clickable */
+        color: var(--c2);
+        font-size: 1.2rem;
+        margin: 0rem;
+    }
+
+    .hamburger:hover {
+        color: var(--c3);
+    }
+
+    .nav-menu {
+        display: none;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .nav-menu ul {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    #menu-toggle:checked ~ .nav-menu {
+        display: block;
+        flex-direction: column;
+    }
 }
 
 
@@ -110,19 +159,22 @@ h3 {
 .fibonacci-layout {
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: 2rem;
     align-items: center;
+    width: 100%
 }
 
 .fibonacci-img-part {
     flex-basis: 38.2%; /* Smaller Fibonacci part */
+    max-width: none;
 }
 
 .fibonacci-img {
-    border-radius: 8px;
+    border-radius: var(--radius);
 }
 
 .fibonacci-text-part {
+    max-width: 65ch;
     flex-basis: 61.8%; /* Larger Fibonacci part */
 }
 
@@ -135,8 +187,7 @@ h3 {
 }
 
 
-
-/* Contact form  --------------------------------------------------------- */
+/* Contact form  + form feedback ---------------------------------------------------- */
 
 .form-input, textarea {
     width: 100%;
@@ -151,33 +202,39 @@ textarea {
     resize: vertical; /* can only change size of box vertically */
 }
 
-.form-button {
+.button-design {
     background-color: var(--c3);
 
     font-family: var(--f1);
     color: var(--c1);
 
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius);
 
     padding: 0.2rem 0.7rem 0.2rem 0.7rem; 
 }
 
+.form-feedback-info {
+    text-align: center;
+}
+
+
 /* Accordian / Dropdown menu  --------------------------------------------------------- */
 
-.drop-down {
-    color: black;
-    
-    padding: 0.3rem;
+.drop-down > summary {
+    cursor: pointer;
+    font-family: var(--f1);
+    color: var(--c3)
+}
+
+.drop-down details, details {
+    margin: 0.2rem 0;
+    padding: 0.2rem 0.5rem;
 
     border: 1px solid var(--c2);
-    border-radius: 8px;
+    border-radius: var(--radius);
 }
 
-.drop-down > summary {
-    list-style: none;
-    cursor: pointer;
-}
 
 /* Badges ---------------------------------------------------------  */
 
@@ -187,35 +244,70 @@ textarea {
     font-family: var(--f1);
     font-size: 1rem;
     color: var(--c1);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Bootstrap shadow-sm */; /* bootstraps shadow-sm */
 
     padding: 0.5rem 1rem;
+}
+
+.badge-collection {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+
+/* ------------- */
+
+.study-date {
+    font-style: italic;
+    font-family: var(--f1);
+}
+
+.study-card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Bootstrap shadow-sm */; /* bootstraps shadow-sm */
+    padding: 0.4rem 1rem;
+    margin: 1rem auto;
+    border-radius: var(--radius);
+}
+
+/* Footer --------------------------------------------------------- */
+
+footer {
+    font-family: var(--f1);
+}
+
+.footer-design {
+    border-top: 1px solid var(--c2);
 }
 
 
 /* Main --------------------------------------------------------- */
 
-section {
+main section:not(.fibonacci-layout){
+    width: min(100%, 65ch);
+    margin-inline: auto;
+}
+
+@media (max-width: 768px) { /* on the phone */
+    .main section {
+        flex-direction: column; /* hamburger stacking on phone */
+        align-items: center; 
+    }
+}
+
+section:not(.hero-section) {
     margin: 1.25rem 0rem;
 }
 
-p a, li a {
+p a, li a, footer a {
     color: var(--c3);
-    text-decoration: none;
+
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: text-decoration-color 0.2s ease;
+
 }
 
-
-/* Footer */
-
-footer {
-    font-family: var(--f1);
-    color: var(--c5);
-}
-
-footer a {
-    color: var(--c3);
-    text-decoration: none;
-}
-
-.footer-design {
-    border-top: 1px solid var(--c2);
+footer a:hover, p a:hover, li a:hover {
+    text-decoration-color: var(--c3)
 }
