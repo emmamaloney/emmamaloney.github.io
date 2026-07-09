@@ -9,13 +9,14 @@
     --f1: "Xanh Mono", serif;
     --f2: "Open Sans", sans-serif;
 
-    --radius: 8px;
+    --radius: 8px; /* for border radius */
 }
 
 body {
     background-color: var(--c1);
+    
     font-family: var(--f2);
-    line-height: 1.5;
+    line-height: 1.5; /* for good readability */
 }
 
 /* Headings --------------------------------------------------------- */
@@ -57,7 +58,7 @@ h3 {
     font-size: 1.5rem;
 }
 
-/* nav links */
+/* nav/page links */
 
 .nav-menu a {
     font-size: 1.2rem;
@@ -77,7 +78,7 @@ h3 {
     margin: 5px;
 }
 
-/* in prep. for hamburger nav system */
+/* in preparation for hamburger nav system */
 
 #menu-toggle, .hamburger { 
     display: none; /* hide checkbox */
