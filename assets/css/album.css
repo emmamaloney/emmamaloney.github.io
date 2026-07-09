@@ -3,11 +3,11 @@
     --c1: #fbfaf9; 
     --c2: #b3bfca;
     --c3: #1d69ab; 
-    /* + black */
+    --c4: #000000;
 
     /* fonts (f = font) */
-    --f1: "Xanh Mono", serif;
-    --f2: "Open Sans", sans-serif;
+    --f1: "Xanh Mono", "Garamond", serif; /* serif with back up font */
+    --f2: "Open Sans", "Arial", sans-serif; /* sans serif with back up font */
 
     --radius: 8px; /* for border radius */
 }
@@ -15,6 +15,7 @@
 body {
     background-color: var(--c1);
     
+    font-size: 1.125rem; /* 18px */   
     font-family: var(--f2);
     line-height: 1.5; /* for good readability */
 }
@@ -26,25 +27,25 @@ h1, h2, h3 {
 }
 
 h1 {
-    margin: 2rem 0rem;
+    margin: 2rem 0rem; /* equal margin above and below */
     font-style: italic;
     font-size: 5rem;
 }
 
 h2 {
-    margin: 2rem 0rem 1rem 0rem;
+    margin: 2rem 0rem 1rem 0rem; /* greater margin above than below */
     font-size: 2rem;
 }
 
 h3 {
-    margin: 1.5rem 0rem 0.7rem 0rem;
+    margin: 1.5rem 0rem 0.7rem 0rem; /* greater margin above than below */
     font-size: 1.4rem;
 }
 
 /* Header + Nav --------------------------------------------------------- */
 
 .header-design {
-    background-color: var(--c1);
+    background-color: var(--c1); /* in order for sticky nav to work nicely */
 }
 
 .logo, .nav-menu a {
@@ -54,7 +55,7 @@ h3 {
 
 .logo {
     font-style: italic;
-    color:black;
+    color: var(--c4);
     font-size: 1.5rem;
 }
 
@@ -66,10 +67,10 @@ h3 {
 }
 
 .nav-menu a:hover {
-    color: var(--c3);
+    color: var(--c3); /* changes colour when hovered over */
 }
 
-.nav-menu a:not(.active)::before {
+.nav-menu a:not(.active)::before { /* non-active pages have the commented out sign // */
     content: "//";
 }
 
@@ -86,10 +87,10 @@ h3 {
 
 /* hamburger menu when on phone */
 
-@media (max-width: 768px) { /* when on phone */
+@media (max-width: 768px) { /* when on phone, hamburger layout */
 
-    .header-design .container {
-        flex-direction: column;
+    .header-design .container { /* vertical layout */
+        flex-direction: column; /* have toggle below logo */
         align-items: flex-start;
     }
 
@@ -101,24 +102,19 @@ h3 {
         margin: 0rem;
     }
 
-    .hamburger:hover {
-        color: var(--c3);
-    }
-
     .nav-menu {
-        display: none;
+        display: none; /* hide nav elements until toggle clicked */
         margin-top: 0.5rem;
         margin-bottom: 0.5rem;
     }
 
     .nav-menu ul {
-        flex-direction: column;
+        flex-direction: column; /* show as a column */
         gap: 0.5rem;
     }
     
-    #menu-toggle:checked ~ .nav-menu {
+    #menu-toggle:checked ~ .nav-menu { /* show nav elements when toggle clicked */
         display: block;
-        flex-direction: column;
     }
 }
 
@@ -126,11 +122,12 @@ h3 {
 /* Hero section --------------------------------------------------------- */
 
 .hero-section {
-    width:100%;
-    height: 75vh;
+    width:100%; /* entire width */
+    height: 75vh; /* 75% of vertical height */
     overflow: hidden; /* hides overflow from section into other sections */
 
-    position: relative;
+    position: relative; /* to later add text above */
+
 }
 
 .hero-section img { 
@@ -148,7 +145,7 @@ h3 {
     /* move content to (true) center */
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); /* otherwise top left edge is at center)
+    transform: translate(-50%, -50%); /* otherwise top left edge is at center */
 
     /* text */
     text-align: center;
@@ -157,26 +154,30 @@ h3 {
 
 /* First page bio  --------------------------------------------------------- */
 
-.fibonacci-layout {
+.fibonacci-layout { /* to structure layout depending on golden ratio */
     display: flex;
     flex-direction: row;
-    gap: 2rem;
     align-items: center;
-    width: 100%
+    
+    width: 100%;
+
+    gap: 2rem;
+    padding: 1rem;
+    
 }
 
-.fibonacci-img-part {
-    flex-basis: 38.2%; /* Smaller Fibonacci part */
-    max-width: none;
+.fibonacci-part1 {
+    flex-basis: 38.2%; /* smaller Fibonacci part (golden ratio) */
+    max-width: 50vw;
 }
 
 .fibonacci-img {
     border-radius: var(--radius);
 }
 
-.fibonacci-text-part {
+.fibonacci-part2 {
     max-width: 65ch;
-    flex-basis: 61.8%; /* Larger Fibonacci part */
+    flex-basis: 61.8%; /* larger Fibonacci part (golden ratio) */
 }
 
 
@@ -190,7 +191,7 @@ h3 {
 
 /* Contact form  + form feedback ---------------------------------------------------- */
 
-.form-input, textarea {
+.form-input, .form-textarea { /* so input spans the card */
     width: 100%;
 }
 
@@ -198,13 +199,13 @@ h3 {
     font-family: var(--f1);
 }
 
-textarea {
+.form-textarea {
     height: 8rem;
     resize: vertical; /* can only change size of box vertically */
 }
 
 .button-design {
-    background-color: var(--c3);
+    background-color: var(--c3); /* in accent colour */
 
     font-family: var(--f1);
     color: var(--c1);
@@ -223,12 +224,15 @@ textarea {
 /* Accordian / Dropdown menu  --------------------------------------------------------- */
 
 .drop-down > summary {
-    cursor: pointer;
     font-family: var(--f1);
     color: var(--c3)
 }
 
-.drop-down details, details {
+summary {
+    cursor: pointer; /* to show it is clickable */
+}
+
+details {
     margin: 0.2rem 0;
     padding: 0.2rem 0.5rem;
 
@@ -245,19 +249,19 @@ textarea {
     font-family: var(--f1);
     font-size: 1rem;
     color: var(--c1);
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Bootstrap shadow-sm */; /* bootstraps shadow-sm */
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Bootstraps shadow-sm */
 
     padding: 0.5rem 1rem;
 }
 
 .badge-collection {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* so extra badges wrap down rather than leave page */
     gap: 0.5rem;
 }
 
 
-/* ------------- */
+/* Study cards ----------------------------------------------------- */
 
 .study-date {
     font-style: italic;
@@ -265,7 +269,7 @@ textarea {
 }
 
 .study-card {
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Bootstrap shadow-sm */; /* bootstraps shadow-sm */
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Bootstrap shadow-sm to apply it to multiple cards at same time */
     padding: 0.4rem 1rem;
     margin: 1rem auto;
     border-radius: var(--radius);
@@ -278,37 +282,37 @@ footer {
 }
 
 .footer-design {
-    border-top: 1px solid var(--c2);
+    border-top: 1px solid var(--c2); /* border above */
 }
 
 
-/* Main --------------------------------------------------------- */
+/* Main – extras --------------------------------------------------------- */
 
-main section:not(.fibonacci-layout){
-    width: min(100%, 65ch);
+main section:not(.fibonacci-layout){ /* all sections in main bar fibonacci where it will be wider */
+    width: min(100%, 65ch); /* for readability 65 character wide (or 100%) */
     margin-inline: auto;
 }
 
 @media (max-width: 768px) { /* on the phone */
-    .main section {
+    main section {
         flex-direction: column; /* hamburger stacking on phone */
         align-items: center; 
     }
 }
 
-section:not(.hero-section) {
+section:not(.hero-section) { /* above/below margins for all sections bar hero */
     margin: 1.25rem 0rem;
 }
 
 p a, li a, footer a {
     color: var(--c3);
 
-    text-decoration: underline;
+    text-decoration: underline; /* to highlight it is a link */
     text-decoration-color: transparent;
-    transition: text-decoration-color 0.2s ease;
+    transition: text-decoration-color 0.2s ease; /* so link underlines show up in a transition, smoother */
 
 }
 
 footer a:hover, p a:hover, li a:hover {
-    text-decoration-color: var(--c3)
+    text-decoration-color: var(--c3); /* show underline when hovering over link */
 }

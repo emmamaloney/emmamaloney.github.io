@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"> <!-- webpage's content is in English -->
 
 <head>
-    <title>Emma Maloney – Contact</title>
+    <title>Emma Maloney – Contact</title>  <!-- title on tab -->
+
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- to make browser render at devices size -->
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <!-- Font Awesome CSS -->
@@ -12,39 +14,42 @@
     <!-- Custom styles -->
     <link rel="stylesheet" href="assets/css/album.css">
 
-    <!-- Font -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Xanh+Mono:ital@0;1&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <header class="header-design sticky-top py-2 shadow-sm"> <!-- Bootstrap sticky top -->
         <div class="container d-flex align-items-center justify-content-between">
-            <a href="index.html" class="logo text-decoration-none text-nowrap">Emma Maloney</a>
+            <a href="index.html" class="logo text-decoration-none text-nowrap">Emma Maloney</a> <!-- logo which acts as home button -->
             
+            <!-- for mobile nav menu -->
             <input type="checkbox" id="menu-toggle"> <!-- Hidden checkbox -->
             <label class="hamburger" for="menu-toggle">☰</label> <!-- Hamburger toggle -->
 
+            <!-- nav menu with page links -->
             <nav class="nav-menu">
                 <ul class="d-flex list-unstyled gap-3 m-0">
                     <li><a href="index.html">Home</a></li>
                     <li><a href="about.html">About</a></li>
                     <li><a href="credentials.html">Credentials</a></li>
-                    <li><a href="contact.html" class="active">Contact</a></li>
+                    <li><a href="contact.html" class="active">Contact</a></li> <!-- current page -->
                 </ul>
             </nav>
         </div>
     </header>
 
     <main class="container">
-        <section>
+        <section> <!-- section to be able to style margins better -->
             <h1>Contact</h1>
             <p>Don't hesitate to reach out! </p>
         </section>
         
         <section>
             <h2>Ways to connect</h2>
-            <p>You can reach me directly via email at <a href="mailto:emma.maloney.work@gmail.com">emma.maloney.work@gmail.com</a>, use the form below, or find me on <a href="https://www.linkedin.com/in/emma-maloney-92b212228" target="_blank">LinkedIn</a>.</p>
+            <p>You can reach me directly via email at <a href="mailto:emma.maloney.work@gmail.com">emma.maloney.work@gmail.com</a>, use the form below, or find me on <a href="https://www.linkedin.com/in/emma-maloney-92b212228" target="_blank">LinkedIn</a>.</p> <!-- use inline links with other text, opening in a new tab -->
             <p>I am currently based in Stockholm, Sweden, and I'm always happy to meet up for a coffee and a chat!</p>
         </section>
          
@@ -53,34 +58,36 @@
 
             <!--contact form -->
             <form class="card shadow-sm p-4">
-                <div class="mb-4">
-                    <label for="name" class="form-label">Name:</label><br>
-                    <input type="text" class="form-input" name="name" id="name">
+                <!-- each part of form has a label and input/text area -->
+                <div class="mb-4"> <!-- div for margins -->
+                    <label for="name" class="form-label">Name:</label><br>  <!-- line break to create airier layout -->
+                    <input type="text" class="form-input" name="name" id="name"> <!-- checks for text input, "name" for later integration to functional form -->
                 </div>
 
                 <div class="mb-4">
-                    <label for="email" class="form-label">Email:</label><br>
-                    <input type="email" class="form-input" name="email" id="email" required>
+                    <label for="email" class="form-label">Email:</label><br> <!-- "for" for screen readers -->
+                    <input type="email" class="form-input" name="email" id="email" required> <!-- only required element, checks for email entry -->
                 </div>
                 
                 <div class="mb-4">
                     <label for="message" class="form-label">Message:</label><br>
-                    <textarea id="message" class="form-textarea" name="message"></textarea>
+                    <textarea id="message" class="form-textarea" name="message"></textarea> <!-- multi-line text input area -->
                 </div>
         
-                <input type="submit" class="button-design" onclick="window.location.href='form-feedback.html';return false;" value="Submit">
+                <input type="submit" class="button-design" onclick="window.location.href='form-feedback.html';return false;" value="Submit"> <!-- non-functional form, redirects to form-feedback.html page -->
             </form>
         </section>
         
     </main>
 
-    <footer class="footer-design border-top py-2">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center text-nowrap">
-                <p class="m-0">&copy; 2026 Emma Maloney</p>
-                <a href="#"><i class="fa-solid fa-arrow-up"></i>Back to top</a>   
+    <!-- footer used on every page -->
+    <footer class="footer-design border-top py-2"> <!-- class for additional styling -->
+        <div class="container"> 
+            <div class="d-flex justify-content-between align-items-center text-nowrap"> <!-- div to structure elements on a row -->
+                <p class="m-0">&copy; 2026 Emma Maloney</p> <!-- copyright -->
+                <a href="#"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i>Back to top</a>  <!-- back to top via link and empty id tag, + icon name not announced by screen readers --> 
             </div>
-            <ul class="d-flex list-unstyled m-0 gap-3 mt-1">
+            <ul class="d-flex list-unstyled m-0 gap-3 mt-1"> <!-- contact links with flexbox styling, below other content -->
                 <li><a href="mailto:emma.maloney.work@gmail.com">Email</a></li>
                 <li><a href="https://www.linkedin.com/in/emma-maloney-92b212228" target="_blank">LinkedIn</a></li><!-- opens new tab -->
                 <li><a href="https://github.com/emmamaloney" target="_blank">GitHub</a></li> <!-- opens new tab -->
