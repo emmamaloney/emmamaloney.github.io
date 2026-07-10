@@ -167,7 +167,7 @@ h3 {
 }
 
 .fibonacci-part1 {
-    flex-basis: 38.2%; /* smaller Fibonacci part (golden ratio) */
+    flex: 38.2%; /* smaller Fibonacci part (golden ratio) */
     max-width: 50vw;
 }
 
@@ -177,7 +177,7 @@ h3 {
 
 .fibonacci-part2 {
     max-width: 65ch;
-    flex-basis: 61.8%; /* larger Fibonacci part (golden ratio) */
+    flex: 61.8%; /* larger Fibonacci part (golden ratio) */
 }
 
 
