@@ -290,9 +290,6 @@ footer {
 
 main section:not(.fibonacci-layout){ /* all sections in main bar fibonacci where it will be wider */
     width: min(100%, 65ch); /* for readability 65 character wide (or 100%) */
-}
-
-main section {
     margin-inline: auto;
 }
 
