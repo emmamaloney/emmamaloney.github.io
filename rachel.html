@@ -847,7 +847,7 @@ async function commitRound(){
 }
 
 // Change this to your deployment URL from Google Apps Script
-const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyqrjzYLzo0nsSAxEVLJ0FGdy7ewUuGF4ASfKQVKEiEmMiT1O4alFoqZwaC1u3IqNr9/exec";
+const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxxVyNjCoudgaAPxBm9BiSZEGBdKoHCwD1INka1ScgZENzXoK3-ducj_f8Ik7jSJ0YP/exec";
 
 
 // Add these to your global state variables (around Line 310)
@@ -882,7 +882,6 @@ function sendRoundToSheets(payload) {
     .then(res => console.log("Round data sent successfully"))
     .catch(err => console.error("Error logging round data:", err));
 }
-
 
 
 // Call this at the end of commitRound() to advance the dealer/starter for the next round
