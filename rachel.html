@@ -673,12 +673,17 @@ async function startGame(){
     await storageSet('roster', roster);
   }
 
+  let dealerIndex = 0;
+  let starterIndex = 1;
+
   game = {
     players: names,
     rounds: rounds,
     direction: direction,
     scores: [],
-    archived: false
+    archived: false,
+    dealerIndex: dealerIndex, 
+    starterIndex: starterIndex
   };
   await storageSet('current-game', game);
 
@@ -850,11 +855,6 @@ async function commitRound(){
 const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxxVyNjCoudgaAPxBm9BiSZEGBdKoHCwD1INka1ScgZENzXoK3-ducj_f8Ik7jSJ0YP/exec";
 
 
-// Add these to your global state variables (around Line 310)
-let dealerIndex = 0; // Index of the player dealing this round
-let starterIndex = 1; // Index of the player starting this round
-
-
 function generateRoundPayload(playerName, roundNumber) {
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
@@ -876,7 +876,8 @@ function generateRoundPayload(playerName, roundNumber) {
 function sendRoundToSheets(payload) {
     fetch(GOOGLE_SHEET_WEBAPP_URL, {
         method: "POST",
-        mode: "cors", // Change this to 'cors'
+        mode: "cors",
+        redirect: "follow", 
         body: JSON.stringify(payload) // Remove custom headers if it complains, or leave standard
     })
     .then(res => console.log("Round data sent successfully"))
