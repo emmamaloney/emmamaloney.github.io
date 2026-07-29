@@ -824,22 +824,45 @@ function resetScore(playerIndex){
 }
 	
 async function commitRound(){
-  const rows = getRoundInputs();
+  const rows = getRoundInputs(); // This gets the array of scores, e.g., [10, 5, 8, 10]
   const sum = rows.reduce((a,b) => a+b, 0);
   if(sum !== ROUND_TOTAL) return;
   
   game.scores.push(rows);
   await storageSet('current-game', game);
   
-  // 1. Calculate the current round number correctly
   const currentRoundNr = game.scores.length;
-  
-  // 2. Pass the dynamic variables through to your payload generator
-  game.players.forEach((playerName, index) => {
-    const playerScore = rows[index];
-    const payload = generateRoundPayload(playerName, currentRoundNr, playerScore);
-    sendRoundToSheets(payload);
+
+  // 1. Bundle all 4 players and their specific scores into a single array
+  const playersData = game.players.map((playerName, index) => {
+    return {
+      playerName: playerName,
+      score: rows[index] // 👈 Grabs their matching score from this round
+    };
   });
+
+  // 2. Generate the single bulk payload package
+  const today = new Date();
+  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, '0'); 
+  const year = today.getFullYear();
+  const formattedDate = `${day}-${month}-${year}`;
+
+  const dealerName = game.players[dealerIndex];
+  const starterName = game.players[starterIndex];
+
+  const bulkPayload = {
+    date: formattedDate,
+    roundNr: currentRoundNr,
+    totalRounds: game.rounds,
+    orderOfPlay: game.players, // Passes the array of names
+    dealer: dealerName,
+    starter: starterName,
+    playersData: playersData // 👈 All 4 players bundled here!
+  };
+
+  // 3. Send ONE single network call instead of looping separate requests
+  sendRoundToSheets(bulkPayload);
   
   renderRoundEntry();
   renderBoard();
@@ -852,7 +875,7 @@ async function commitRound(){
 }
 
 // Change this to your deployment URL from Google Apps Script
-const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxMmZ0772yxdavnMTjaaJFvrJjO1TEavSz3SqGH7yiJayl56UG9qx4yDf78f7AS-4uB/exec";
+const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxYcOv-iTh-QJyYF1pkNa90z0YSuR2lTFo2ZjnpHgyjD_xxLT9tU4UTRM8BScUSFeHU/exec";
 
 
 // Add playerScore as a parameter
@@ -888,7 +911,6 @@ function sendRoundToSheets(payload) {
     .then(res => console.log("Round data sent successfully"))
     .catch(err => console.error("Error logging round data:", err));
 }
-
 
 // Call this at the end of commitRound() to advance the dealer/starter for the next round
 function rotateRoles() {
