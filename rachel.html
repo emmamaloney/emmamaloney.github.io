@@ -836,7 +836,8 @@ async function commitRound(){
   
   // 2. Pass the dynamic variables through to your payload generator
   game.players.forEach((playerName, index) => {
-    const payload = generateRoundPayload(playerName, currentRoundNr);
+    const playerScore = rows[index];
+    const payload = generateRoundPayload(playerName, currentRoundNr, playerScore);
     sendRoundToSheets(payload);
   });
   
@@ -851,25 +852,26 @@ async function commitRound(){
 }
 
 // Change this to your deployment URL from Google Apps Script
-const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxxVyNjCoudgaAPxBm9BiSZEGBdKoHCwD1INka1ScgZENzXoK3-ducj_f8Ik7jSJ0YP/exec";
+const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyORW0uPhFOoIMSHrDZTkbEsnr80J7hX9QgOxrYnmCNOmz4NYWJNo7P0sGT1maAz53Q/exec";
 
 
-function generateRoundPayload(playerName, roundNumber) {
+// Add playerScore as a parameter
+function generateRoundPayload(playerName, roundNumber, playerScore) {
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
     const month = String(today.getMonth() + 1).padStart(2, '0'); 
     const year = today.getFullYear();
     const formattedDate = `${day}-${month}-${year}`;
 
-    // Fixed code:
     const dealer = game.players[dealerIndex] || "Unknown Dealer";
     const starter = game.players[starterIndex] || "Unknown Starter";
 
     return {
         date: formattedDate,
         playerName: playerName, 
-        totalRounds: game.rounds,
+        score: playerScore, // 👈 ADD THIS CRITICAL FIELD HERE
         roundNr: roundNumber,
+        totalRounds: game.rounds,
         orderOfPlay: game.players, 
         dealer: dealer,
         starter: starter
