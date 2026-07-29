@@ -871,13 +871,10 @@ function generateRoundPayload(playerName, roundNumber) {
 function sendRoundToSheets(payload) {
     fetch(GOOGLE_SHEET_WEBAPP_URL, {
         method: "POST",
-        mode: "no-cors", 
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
+        mode: "cors", // Change this to 'cors'
+        body: JSON.stringify(payload) // Remove custom headers if it complains, or leave standard
     })
-    .then(() => console.log("Round data sent for " + payload.playerName))
+    .then(res => console.log("Round data sent successfully"))
     .catch(err => console.error("Error logging round data:", err));
 }
 
