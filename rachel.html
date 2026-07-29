@@ -542,6 +542,8 @@ let roster = [];
 let playerCount = 4;
 let game = null;
 let summaryChartMode = 'score';
+let dealerIndex = 0;
+let starterIndex = 1;
 
 const ROUND_TOTAL = 33;
 const PALETTE = ['#1E90FF','#0B3D77','#2E9B58','#D64545','#8B5FBF','#E08E2B'];
@@ -672,9 +674,6 @@ async function startGame(){
     roster = roster.concat(newNames);
     await storageSet('roster', roster);
   }
-
-  let dealerIndex = 0;
-  let starterIndex = 1;
 
   game = {
     players: names,
