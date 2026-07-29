@@ -817,11 +817,11 @@ async function commitRound(){
   game.scores.push(rows);
   await storageSet('current-game', game);
   
-  // Send each player's data for this round to Google Sheets
+  // 1. Calculate the current round number correctly
   const currentRoundNr = game.scores.length;
   
+  // 2. Pass the dynamic variables through to your payload generator
   game.players.forEach((playerName, index) => {
-    // Generate data matching your exact requested properties
     const payload = generateRoundPayload(playerName, currentRoundNr);
     sendRoundToSheets(payload);
   });
@@ -829,7 +829,7 @@ async function commitRound(){
   renderRoundEntry();
   renderBoard();
   renderChart();
-  rotateRoles();
+  rotateRoles(); // Advances dealerIndex and starterIndex for next round
   
   if(game.scores.length >= game.rounds){
     await archiveCurrentGameIfNeeded();
@@ -866,7 +866,7 @@ function generateRoundPayload(playerName, roundNumber) {
 function sendRoundToSheets(payload) {
     fetch(GOOGLE_SHEET_WEBAPP_URL, {
         method: "POST",
-        mode: "no-cors", // Required to bypass CORS blocks with Apps Script
+        mode: "no-cors", 
         headers: {
             "Content-Type": "application/json"
         },
