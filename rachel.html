@@ -861,14 +861,18 @@ function generateRoundPayload(playerName, roundNumber) {
     const year = today.getFullYear();
     const formattedDate = `${day}-${month}-${year}`;
 
+    // Fixed code:
+    const dealer = game.players[dealerIndex] || "Unknown Dealer";
+    const starter = game.players[starterIndex] || "Unknown Starter";
+
     return {
         date: formattedDate,
         playerName: playerName, 
         totalRounds: game.rounds,
         roundNr: roundNumber,
         orderOfPlay: game.players, 
-        dealer: game.players[dealerIndex],
-        starter: game.players[starterIndex]
+        dealer: dealer,
+        starter: starter
     };
 }
 
