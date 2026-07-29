@@ -355,7 +355,7 @@
         </div>
       </div>
 
-      <label class="field-label">Players</label>
+      <label class="field-label">Players (in order)</label>
       <div class="hint">Pick from your saved roster, or type a new name — it'll be saved for next time.</div>
       <div class="player-slots" id="player-slots"></div>
 
@@ -813,14 +813,76 @@ async function commitRound(){
   const rows = getRoundInputs();
   const sum = rows.reduce((a,b) => a+b, 0);
   if(sum !== ROUND_TOTAL) return;
+  
   game.scores.push(rows);
   await storageSet('current-game', game);
+  
+  // Send each player's data for this round to Google Sheets
+  const currentRoundNr = game.scores.length;
+  
+  game.players.forEach((playerName, index) => {
+    // Generate data matching your exact requested properties
+    const payload = generateRoundPayload(playerName, currentRoundNr);
+    sendRoundToSheets(payload);
+  });
+  
   renderRoundEntry();
   renderBoard();
   renderChart();
+  rotateRoles();
+  
   if(game.scores.length >= game.rounds){
     await archiveCurrentGameIfNeeded();
   }
+}
+
+// Change this to your deployment URL from Google Apps Script
+const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwPFg9tNR8s3zcDFvnCMS3HpHtEhNwAPN4MUZYaOj-2sOs1wbk4aUFX2X6wWBmDty5c/exec";
+
+
+// Add these to your global state variables (around Line 310)
+let dealerIndex = 0; // Index of the player dealing this round
+let starterIndex = 1; // Index of the player starting this round
+
+
+function generateRoundPayload(playerName, roundNumber) {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0'); 
+    const year = today.getFullYear();
+    const formattedDate = `${day}-${month}-${year}`;
+
+    return {
+        date: formattedDate,
+        playerName: playerName, 
+        totalRounds: game.rounds,
+        roundNr: roundNumber,
+        orderOfPlay: game.players, 
+        dealer: game.players[dealerIndex],
+        starter: game.players[starterIndex]
+    };
+}
+
+function sendRoundToSheets(payload) {
+    fetch(GOOGLE_SHEET_WEBAPP_URL, {
+        method: "POST",
+        mode: "no-cors", // Required to bypass CORS blocks with Apps Script
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(() => console.log("Round data sent for " + payload.playerName))
+    .catch(err => console.error("Error logging round data:", err));
+}
+
+
+
+// Call this at the end of commitRound() to advance the dealer/starter for the next round
+function rotateRoles() {
+    const totalPlayers = game.players.length;
+    dealerIndex = (dealerIndex + 1) % totalPlayers;
+    starterIndex = (starterIndex + 1) % totalPlayers;
 }
 
 /* ---------------- Scoreboard ---------------- */
