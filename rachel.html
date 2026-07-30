@@ -242,6 +242,17 @@
     box-shadow:0 2px 4px rgba(0,0,0,0.25);
   }
 
+  .role-badges{display:inline-flex;gap:6px;margin-left:8px;vertical-align:middle;}
+  .role-badge{
+    display:inline-flex;align-items:center;gap:4px;
+    font-family:'Inter',sans-serif;font-weight:700;font-size:10.5px;
+    text-transform:uppercase;letter-spacing:0.04em;
+    padding:3px 9px;border-radius:999px;line-height:1.4;
+    white-space:nowrap;
+  }
+  .role-badge.dealer{background:var(--blue-dark);color:#fff;}
+  .role-badge.starter{background:var(--blue-pale);color:var(--blue-dark);border:1px solid var(--blue);}
+
   @media (max-width:600px){
     table.board{min-width:0;font-size:12.5px;}
     table.board th, table.board td{padding:6px 4px;}
@@ -486,6 +497,11 @@
       <p class="sub">Every saved game, most recent first. Swipe left on mobile, or tap ✕, to delete one.</p>
       <ul class="history-list" id="history-list"></ul>
     </div>
+    <div class="card">
+      <div class="top-controls">
+        <h2 style="margin:0;">Emma's stats</h2>
+        <button class="btn btn-primary" onclick="">Run numbers</button>
+    </div>
   </div>
 
 </div>
@@ -577,6 +593,8 @@ async function resumeGame(){
   const existing = await storageGet('current-game');
   if(!existing) return;
   game = existing;
+  dealerIndex = game.dealerIndex || 0;
+  starterIndex = game.starterIndex !== undefined ? game.starterIndex : 1;
   document.getElementById('resume-bar-slot').innerHTML = '';
   document.getElementById('setup-view').style.display = 'none';
   document.getElementById('game-view').style.display = 'block';
@@ -620,7 +638,7 @@ function renderPlayerSlots(){
     const div = document.createElement('div');
     const savedVal = prevValues[i] || '';
     div.innerHTML = `
-      <label class="field-label">Player ${i+1}</label>
+      <label class="field-label">Player ${i+1}${i===0?' <span class="role-badge dealer" style="margin-left:6px;">Dealer</span>':''}</label>
       <select id="player-select-${i}" onchange="handlePlayerSelectChange(${i})">
         <option value="">— choose or type new —</option>
         ${roster.map(n => `<option value="${escapeHtml(n)}" ${n===savedVal?'selected':''}>${escapeHtml(n)}</option>`).join('')}
@@ -675,6 +693,9 @@ async function startGame(){
     await storageSet('roster', roster);
   }
 
+  dealerIndex = 0;
+  starterIndex = names.length > 1 ? 1 : 0;
+
   game = {
     players: names,
     rounds: rounds,
@@ -720,7 +741,8 @@ function renderRoundEntry(){
    
 ${game.players.map((p,i) => `
 <tr>
-  <td>${escapeHtml(p)}</td>
+  <td>${escapeHtml(p)}<span class="role-badges">${i===dealerIndex?'<span class="role-badge dealer" title="Deals this round">Dealer</span>':''}${i===starterIndex?'<span class="role-badge starter" title="Leads the first trick">Starter</span>':''}</span></td>
+
 
   <td>
     <div class="score-display" id="score-${i}">
@@ -863,12 +885,14 @@ async function commitRound(){
 
   // 3. Send ONE single network call instead of looping separate requests
   sendRoundToSheets(bulkPayload);
+
+  rotateRoles(); // Advances dealerIndex and starterIndex for next round
+  await storageSet('current-game', game);
   
   renderRoundEntry();
   renderBoard();
   renderChart();
-  rotateRoles(); // Advances dealerIndex and starterIndex for next round
-  
+
   if(game.scores.length >= game.rounds){
     await archiveCurrentGameIfNeeded();
   }
@@ -917,6 +941,8 @@ function rotateRoles() {
     const totalPlayers = game.players.length;
     dealerIndex = (dealerIndex + 1) % totalPlayers;
     starterIndex = (starterIndex + 1) % totalPlayers;
+    game.dealerIndex = dealerIndex;
+    game.starterIndex = starterIndex;
 }
 
 /* ---------------- Scoreboard ---------------- */
