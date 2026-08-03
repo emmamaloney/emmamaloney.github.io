@@ -671,6 +671,59 @@ function submitAnalysisRequest() {
     .catch(error => console.error("Error fetching analysis stats:", error));
 }
 
+document.getElementById('runNumbers').addEventListener('click', async () => {
+  // 1. Collect selected players
+  const selectedPlayers = Array.from(
+    document.querySelectorAll('input[name="players"]:checked')
+  ).map(cb => cb.value);
+
+  // 2. Collect selected analysis/graph option
+  const selectedGraph = document.querySelector('input[name="graphType"]:checked')?.value;
+
+  if (!selectedGraph) {
+    alert("Please select a graph/stat option first.");
+    return;
+  }
+
+  const container = document.getElementById('stats-container');
+  const graphOutput = document.getElementById('graphOutput');
+  
+  if (container) container.innerHTML = 'Loading results...';
+  if (graphOutput) graphOutput.innerHTML = '';
+
+  try {
+    const response = await fetch(`${RENDER_URL}/analysis/graph`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        players: selectedPlayers,
+        analysis: selectedGraph
+      })
+    });
+
+    const contentType = response.headers.get("content-type");
+
+    // If the server returns JSON data (Stats / Tables)
+    if (contentType && contentType.includes("application/json")) {
+      const result = await response.json();
+      if (result.status === "success") {
+        renderStatsTable(selectedGraph, result.data);
+      }
+    } 
+    // If the server returns an image (Graphs / Plots)
+    else {
+      const imageBlob = await response.blob();
+      const objectURL = URL.createObjectURL(imageBlob);
+      if (graphOutput) {
+        graphOutput.innerHTML = `<img src="${objectURL}" alt="Analysis Graph" style="max-width: 100%; height: auto; margin-top: 15px;" />`;
+      }
+    }
+  } catch (error) {
+    console.error("Error running numbers:", error);
+    if (container) container.innerHTML = '<span style="color:var(--bad);">Failed to run numbers.</span>';
+  }
+});
+
 function renderStatsTable(analysisType, data) {
     const container = document.getElementById('stats-container');
     container.innerHTML = ''; // Clear previous contents
@@ -698,7 +751,7 @@ function renderStatsTable(analysisType, data) {
                                 <tr>
                                     <td><strong>#${game.rank}</strong></td>
                                     <td>${game.player}</td>
-                                    <td><span class="badge score-high">${game.score}</span></td>
+                                    <td><span class="badge score-low">${game.score}</span></td>
                                     <td>${formatDate(game.date)}</td>
                                 </tr>
                             `).join('')}
@@ -712,7 +765,7 @@ function renderStatsTable(analysisType, data) {
         if (data.worst_games && data.worst_games.length > 0) {
             htmlContent += `
                 <div class="stats-table-wrapper">
-                    <div class="stats-table-title">📉 Lowest Scoring Games</div>
+                    <div class="stats-table-title">Worst Scoring Games</div>
                     <table class="analytics-table">
                         <thead>
                             <tr>
@@ -727,7 +780,7 @@ function renderStatsTable(analysisType, data) {
                                 <tr>
                                     <td><strong>#${game.rank}</strong></td>
                                     <td>${game.player}</td>
-                                    <td><span class="badge score-low">${game.score}</span></td>
+                                    <td><span class="badge score-high">${game.score}</span></td>
                                     <td>${formatDate(game.date)}</td>
                                 </tr>
                             `).join('')}
@@ -744,7 +797,7 @@ function renderStatsTable(analysisType, data) {
         // Handles flat key-value pair dictionaries (Player: Total Score)
         let rows = '';
         // Sort players descending by score for a leaderboard style presentation
-        const sortedScores = Object.entries(data).sort((a, b) => b[1] - a[1]);
+        const sortedScores = Object.entries(data).sort((a, b) => a[1] - b[1]);
 
         sortedScores.forEach(([player, score], index) => {
             rows += `
@@ -893,14 +946,26 @@ const PALETTE = ['#1E90FF','#0B3D77','#2E9B58','#D64545','#8B5FBF','#E08E2B'];
 const HEART_PATH = "M5 8.6 C5 8.6 1 5.7 1 3.1 C1 1.6 2.1 0.5 3.5 0.5 C4.4 0.5 5 1 5 1 C5 1 5.6 0.5 6.5 0.5 C7.9 0.5 9 1.6 9 3.1 C9 5.7 5 8.6 5 8.6 Z";
 
 /* ---------------- Init ---------------- */
+
 (async function init(){
-  roster = (await storageGet('roster')) || [];
+  try {
+    // Fetch roster from external endpoint on startup
+    const response = await fetch(`${RENDER_URL}/dataset/players`); // players from previous games
+    if (response.ok) {
+      roster = await response.json();
+    }
+  } catch (e) {
+    console.error("Could not load roster from server:", e);
+    roster = DEFAULT_PLAYERS;
+  }
+
   renderPlayerSlots();
 
   const existing = await storageGet('current-game');
   if(existing && existing.players && existing.scores){
     showResumeBar(existing);
   }
+
 })();
 
 
@@ -1763,13 +1828,13 @@ async function renderRosterList() {
     return;
   }
   
-  // 4. Populate list rows using the updated array
   listElement.innerHTML = playerNames.map((name, index) => `
     <li>
       ${escapeHtml(name)} 
-      <button onclick="removeRosterName(${index})">Remove</button>
     </li>
   `).join('');
+  // remove roster name: <button onclick="removeRosterName(${index})">Remove</button>
+  
 }
 
 async function addRosterNameFromModal(){
@@ -1783,11 +1848,15 @@ async function addRosterNameFromModal(){
   input.value = '';
   renderRosterList();
 }
+
+// Remove roster name, currently getting from dataset
+/* 
 async function removeRosterName(i){
   roster.splice(i,1);
   await storageSet('roster', roster);
   renderRosterList();
 }
+*/
 </script>
 </body>
 </html>
