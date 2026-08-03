@@ -23,15 +23,18 @@
 <style>
   :root{
     --bg: #FFFFFF;
+
     --ink: #16324E;
     --ink-soft: #5B7186;
     --panel-border: #DCE7F5;
     --blue: #1E90FF;
     --blue-dark: #0B3D77;
     --blue-pale: #EAF3FF;
+
+    /* score classification colours */
     --good: #2E9B58;
-    --bad: #D64545;
     --warn: #E0972B;
+    --bad: #D64545;
 
     /* rank colours */ 
     --gold: #D4AF37;
@@ -39,13 +42,21 @@
     --bronze: #CD7F32;
     --rank-other: #33404D;
 
+    /* design choices */
     --radius: 10px;
     --shadow: 0 10px 26px rgba(23,50,77,0.10);
   }
 
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
+  * {
+    box-sizing:border-box;
+  }
+  
+  html, body {
+    margin:0;
+    padding:0;
+  }
+  
+  body {
     min-height:100vh;
     background:
       radial-gradient(circle at 12% 0%, rgba(30,144,255,0.07), transparent 45%),
@@ -56,33 +67,44 @@
     color:var(--ink);
     padding:32px 16px 80px;
   }
-  .wrap{max-width:880px;margin:0 auto;}
+  
+  .wrap {
+    max-width:880px;
+    margin:0 auto;
+  }
 
-
-	.score-display{
+  /* Score after every round */
+  .score-display {
     display:inline-block;
     min-width:3rem;
     text-align:center;
     font-size:1.4rem;
     font-weight:700;
     padding:.25rem .5rem;
-}
+  }
 
-.score-buttons{
+  /* Buttons for +1, +5, +10 – score after every round */
+  .score-buttons {
     display:flex;
     gap:.4rem;
     flex-wrap:wrap;
-}
+  }
 	
-  header.masthead{
+  header.masthead {
     display:flex;align-items:center;justify-content:space-between;
     margin-bottom:24px;
     color:var(--ink);
     flex-wrap:wrap;
     gap:16px;
   }
-  .brand{display:flex;align-items:center;gap:14px;}
-  .pip-index{
+  
+  .brand {
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+
+  .pip-index {
     width:52px;height:68px;background:var(--blue-dark);border-radius:6px;
     box-shadow: var(--shadow);
     position:relative;
@@ -176,6 +198,7 @@
   .player-slots{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px;}
   @media (max-width:560px){.player-slots{grid-template-columns:1fr;} .row-2{grid-template-columns:1fr;}}
 
+  /* ----- Buttons ---------------- */
   .btn{
     font-family:'Inter',sans-serif;font-weight:600;font-size:14.5px;
     padding:12px 22px;border-radius:8px;border:none;cursor:pointer;
@@ -194,6 +217,7 @@
   
   .btn-small{padding:7px 14px;font-size:13px;}
 
+  /* */
   .round-banner{
     display:flex;align-items:center;justify-content:space-between;
     color:var(--ink);margin-bottom:18px;flex-wrap:wrap;gap:10px;
@@ -220,6 +244,11 @@
   .total-banner.ok{background:rgba(46,155,88,0.12);color:var(--good);border-color:rgba(46,155,88,0.35);}
   .total-banner.bad{background:rgba(214,69,69,0.10);color:var(--bad);border-color:rgba(214,69,69,0.3);}
 
+
+  .placeholder {
+    color: #888;
+    font-style: italic;
+  }
   .actions-row{display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap;}
 
   .scoreboard-wrap{overflow-x:auto;}
@@ -240,6 +269,10 @@
     display:inline-flex;align-items:center;justify-content:center;
     width:28px;height:28px;border-radius:50%;color:#fff;font-weight:700;font-size:13px;
     box-shadow:0 2px 4px rgba(0,0,0,0.25);
+  }
+
+  .hidden {
+    display: none;
   }
 
   .role-badges{display:inline-flex;gap:6px;margin-left:8px;vertical-align:middle;}
@@ -327,6 +360,52 @@
     display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;font-size:14px;
   }
   .resume-bar .btn{padding:8px 16px;font-size:13px;}
+
+  /* Clean, professional styling for the summary tables */
+  .stats-table-wrapper {
+      margin-bottom: 30px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      padding: 20px;
+  }
+  .stats-table-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #ecf0f1;
+      padding-bottom: 8px;
+  }
+  .analytics-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+  }
+  .analytics-table th {
+      background-color: #f8f9fa;
+      color: #495057;
+      font-weight: 600;
+      padding: 12px;
+      border-bottom: 2px solid #dee2e6;
+  }
+  .analytics-table td {
+      padding: 12px;
+      border-bottom: 1px solid #dee2e6;
+      color: #495057;
+  }
+  .analytics-table tr:hover {
+      background-color: #f1f3f5;
+  }
+  .flex-tables {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+  }
+  .flex-tables .stats-table-wrapper {
+      flex: 1;
+      min-width: 300px;
+  }
 </style>
 
 <!-- ------------------------------ HTML -------------------------------- -->
@@ -342,7 +421,7 @@
       </div>
       <div>
         <h1>Rachel</h1>
-        <p>13 CARDS · Q♠ = 10 PTS · ROUND TOTAL 33</p>
+        <p>13 CARDS · ROUND TOTAL 33 · Q♠ = 10 PTS</p>
       </div>
     </div>
     <button class="roster-link" onclick="openRosterModal()">Manage players</button>
@@ -467,6 +546,8 @@
 
   </div>
 
+
+  <!-- -------------- SUMMARY TAB ----------------------------------------------------- -->
   <div id="summary-tab" style="display:none;">
     <div class="card">
       <h2>All-time summary</h2>
@@ -497,10 +578,30 @@
       <p class="sub">Every saved game, most recent first. Swipe left on mobile, or tap ✕, to delete one.</p>
       <ul class="history-list" id="history-list"></ul>
     </div>
+
+    <!-- MY STATS -->
     <div class="card">
       <div class="top-controls">
         <h2 style="margin:0;">Emma's stats</h2>
-        <button class="btn btn-primary" onclick="">Run numbers</button>
+        <button id='loadData' class="btn btn-primary">Load data</button>
+      </div>
+      <div>
+        <h3>Choose players</h3>
+        <div id="playerContainer" class="player-checkboxes">
+          <span class="placeholder">No data loaded</span>
+        </div>
+        
+        <h3>Choose graphs + stats</h3>
+        <div id="graphContainer" class="graph-buttons">
+          <span class="placeholder">No data loaded</span>
+        </div>
+        
+        <button id='runNumbers' class="btn btn-primary">Run numbers</button>
+        <div id="graphOutput"></div>
+
+        <div id="stats-container" class="analytics-summary-box">
+        </div>
+      </div>
     </div>
   </div>
 
@@ -519,7 +620,233 @@
 </div>
 
 <script>
+
+const RENDER_URL = 'https://cards-backend-lza8.onrender.com';
+const DEFAULT_PLAYERS = ['Emma', 'Casper', 'Al', 'Camilla'];
+
 /* ---------------- Persistent storage helpers ---------------- */
+
+// Example trigger execution logic block
+function submitAnalysisRequest() {
+    const selectedAnalysis = document.getElementById('analysis-select').value; // e.g., 'best_and_worst_games'
+    const selectedPlayers = getSelectedPlayersArray(); // e.g., ['Casper', 'Emma']
+    
+    const graphImageElement = document.getElementById('graph-display-img');
+    const tableContainerElement = document.getElementById('stats-table-container');
+
+    fetch('/analysis/graph', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            players: selectedPlayers,
+            analysis: selectedAnalysis
+        })
+    })
+    .then(response => {
+        // Detect response payload structure type
+        const contentType = response.headers.get("content-type");
+        
+        if (contentType && contentType.includes("application/json")) {
+            // It is a STATS dict payload! Hide image element and fetch json array data
+            return response.json().then(result => {
+                if (graphImageElement) graphImageElement.style.display = 'none';
+                
+                if (result.status === "success") {
+                    renderAnalyticsTable(selectedAnalysis, result.data);
+                }
+            });
+        } else {
+            // It is a PLOTS binary image stream! Hide table container and generate Image object url
+            return response.blob().then(imageBlob => {
+                if (tableContainerElement) tableContainerElement.style.display = 'none';
+                
+                const objectURL = URL.createObjectURL(imageBlob);
+                if (graphImageElement) {
+                    graphImageElement.src = objectURL;
+                    graphImageElement.style.display = 'block';
+                }
+            });
+        }
+    })
+    .catch(error => console.error("Error fetching analysis stats:", error));
+}
+
+function renderStatsTable(analysisType, data) {
+    const container = document.getElementById('stats-container');
+    container.innerHTML = ''; // Clear previous contents
+
+    if (analysisType === 'best_and_worst_games') {
+        // Handles the nested lists setup
+        let htmlContent = '<div class="flex-tables">';
+        
+        // Render Best Games Table
+        if (data.best_games && data.best_games.length > 0) {
+            htmlContent += `
+                <div class="stats-table-wrapper">
+                    <div class="stats-table-title">🏆 Best Games</div>
+                    <table class="analytics-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Player</th>
+                                <th>Score</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.best_games.map(game => `
+                                <tr>
+                                    <td><strong>#${game.rank}</strong></td>
+                                    <td>${game.player}</td>
+                                    <td><span class="badge score-high">${game.score}</span></td>
+                                    <td>${formatDate(game.date)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // Render Worst Games Table
+        if (data.worst_games && data.worst_games.length > 0) {
+            htmlContent += `
+                <div class="stats-table-wrapper">
+                    <div class="stats-table-title">📉 Lowest Scoring Games</div>
+                    <table class="analytics-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Player</th>
+                                <th>Score</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.worst_games.map(game => `
+                                <tr>
+                                    <td><strong>#${game.rank}</strong></td>
+                                    <td>${game.player}</td>
+                                    <td><span class="badge score-low">${game.score}</span></td>
+                                    <td>${formatDate(game.date)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+        
+        htmlContent += '</div>';
+        container.innerHTML = htmlContent;
+
+    } else if (analysisType === 'get_total_scores') {
+        // Handles flat key-value pair dictionaries (Player: Total Score)
+        let rows = '';
+        // Sort players descending by score for a leaderboard style presentation
+        const sortedScores = Object.entries(data).sort((a, b) => b[1] - a[1]);
+
+        sortedScores.forEach(([player, score], index) => {
+            rows += `
+                <tr>
+                    <td><strong>#${index + 1}</strong></td>
+                    <td>${player}</td>
+                    <td>${score.toLocaleString()}</td>
+                </tr>
+            `;
+        });
+
+        container.innerHTML = `
+            <div class="stats-table-wrapper" style="max-width: 600px; margin: 0 auto;">
+                <div class="stats-table-title">📊 Overall Cumulative Leaderboard</div>
+                <table class="analytics-table">
+                    <thead>
+                        <tr>
+                            <th>Position</th>
+                            <th>Player Name</th>
+                            <th>Total Accumulated Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+};
+
+
+// Helper utility to keep dates clean and readable if datetime strings are returned
+function formatDate(dateString) {
+  if (!dateString || dateString === 'N/A') return 'N/A';
+  try {
+      const d = new Date(dateString);
+      return isNaN(d.getTime()) ? dateString : d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  } catch (e) {
+      return dateString;
+  }
+}
+
+// fetch data for players + graphs
+document.getElementById('loadData').addEventListener('click', async function() {
+  const playerContainer = document.getElementById('playerContainer');
+  const graphContainer = document.getElementById('graphContainer');
+
+  try {
+    // 1. Show loading states
+    playerContainer.innerHTML = 'Loading players...';
+    graphContainer.innerHTML = 'Loading graphs...';
+
+    const load = await fetch(`${RENDER_URL}/dataset/load`, {
+      method: 'POST'
+    });
+
+    // 2. Fetch options directly from your FastApi GET route
+    const response = await fetch(`${RENDER_URL}/analysis/options`, {
+      method: 'GET'
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json(); 
+    
+    // Clear out placeholders completely
+    playerContainer.innerHTML = '';
+    graphContainer.innerHTML = '';
+
+    // 3. Render Players Checkboxes (Pre-checking defaults)
+    data.players.forEach(player => {
+      const isChecked = data.default_players.includes(player) ? 'checked' : '';
+      
+      playerContainer.innerHTML += `
+        <label style="display: block; margin-bottom: 4px;">
+          <input type="checkbox" name="players" value="${player}" ${isChecked}> ${player}
+        </label>
+      `;
+    });
+
+    // 4. Render Graph/Stat Options (Corrected container to graphContainer)
+    data.analysis.forEach(item => {
+      graphContainer.innerHTML += `
+        <label style="display: block; margin-bottom: 4px;">
+          <input type="radio" name="graphType" value="${item.id}"> ${item.name}
+        </label>
+      `;
+    });
+
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    playerContainer.innerHTML = '<span style="color: #ff4d4d;">Failed to load players</span>';
+    graphContainer.innerHTML = '<span style="color: #ff4d4d;">Failed to load options</span>';
+  }
+});
+
+
+
+
 async function storageGet(key) {
     if (window.storage) {
         try {
@@ -575,6 +902,34 @@ const HEART_PATH = "M5 8.6 C5 8.6 1 5.7 1 3.1 C1 1.6 2.1 0.5 3.5 0.5 C4.4 0.5 5 
     showResumeBar(existing);
   }
 })();
+
+
+document.getElementById("generateGraph").onclick = async () => {
+
+  const players = [...document.querySelectorAll(
+      "#playerContainer input:checked"
+  )].map(x => x.value);
+
+  const graph = document.querySelector(".graph-btn.active").dataset.id;
+
+  const response = await fetch("/statistics/graph", {
+
+      method: "POST",
+
+      headers: {
+          "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+          players,
+          graph
+      })
+
+  });
+
+  document.getElementById("graphOutput").innerHTML =
+    await response.text();
+};
 
 function showResumeBar(existing){
   const slot = document.getElementById('resume-bar-slot');
@@ -743,7 +1098,7 @@ ${game.players.map((p,i) => `
 <tr>
   <td>${escapeHtml(p)}<span class="role-badges">${i===dealerIndex?'<span class="role-badge dealer" title="Deals this round">Dealer</span>':''}${i===starterIndex?'<span class="role-badge starter" title="Leads the first trick">Starter</span>':''}</span></td>
 
-
+  
   <td>
     <div class="score-display" id="score-${i}">
       0
@@ -1376,16 +1731,47 @@ function closeRosterModal(){
   document.getElementById('roster-modal').classList.remove('show');
   renderPlayerSlots();
 }
-function renderRosterList(){
-  const list = document.getElementById('roster-list');
-  if(roster.length === 0){
-    list.innerHTML = '<li style="color:#8a806a;">No saved players yet.</li>';
+/* ---------------- Updated Roster List Renderer ---------------- */
+async function renderRosterList() {
+  // 1. Correctly target and declare the structural layout DOM reference upfront
+  const listElement = document.getElementById('roster-list');
+  if (!listElement) return;
+
+  let playerNames = [];
+
+  try {
+    // 2. Fetch the unique array from your FastAPI cards_analytics server
+    const response = await fetch(`${RENDER_URL}/dataset/players`, {
+      method: 'GET'
+    });
+    
+    if (response.ok) {
+      // Server returns a flat array of strings, e.g., ["Al", "Camilla", "Casper", "Emma"]
+      playerNames = await response.json(); 
+    } else {
+      throw new Error("Server response failed, falling back to local roster state.");
+    }
+  } catch (e) {
+    console.warn("Fetch failed:", e);
+    // Fallback to your local user state array variable if the server is offline
+    playerNames = typeof roster !== 'undefined' ? roster : [];
+  }
+  
+  // 3. Render placeholder message if no players exist anywhere
+  if (playerNames.length === 0) {
+    listElement.innerHTML = '<li style="color:#8a806a;">No saved players yet.</li>';
     return;
   }
-  list.innerHTML = roster.map((n,i) => `
-    <li>${escapeHtml(n)} <button onclick="removeRosterName(${i})">Remove</button></li>
+  
+  // 4. Populate list rows using the updated array
+  listElement.innerHTML = playerNames.map((name, index) => `
+    <li>
+      ${escapeHtml(name)} 
+      <button onclick="removeRosterName(${index})">Remove</button>
+    </li>
   `).join('');
 }
+
 async function addRosterNameFromModal(){
   const input = document.getElementById('new-roster-name');
   const name = input.value.trim();
