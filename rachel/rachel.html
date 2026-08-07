@@ -183,6 +183,11 @@
         <div id="playerContainer" class="player-checkboxes">
           <span class="placeholder">No data loaded</span>
         </div>
+
+        <h3>Choose session</h3>
+        <div id="sessionContainer" class="session-buttons">
+          <span class="placeholder">No data loaded</span>
+        </div>
         
         <h3>Choose graphs + stats</h3>
         <div id="graphContainer" class="graph-buttons">
@@ -205,51 +210,6 @@ const RENDER_URL = 'https://cards-backend-lza8.onrender.com';
 const DEFAULT_PLAYERS = ['Emma', 'Casper', 'Al', 'Camilla'];
 
 /* ---------------- Persistent storage helpers ---------------- */
-
-// Example trigger execution logic block
-function submitAnalysisRequest() {
-    const selectedAnalysis = document.getElementById('analysis-select').value; // e.g., 'best_and_worst_games'
-    const selectedPlayers = getSelectedPlayersArray(); // e.g., ['Casper', 'Emma']
-    
-    const graphImageElement = document.getElementById('graph-display-img');
-    const tableContainerElement = document.getElementById('stats-table-container');
-
-    fetch('/analysis/graph', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            players: selectedPlayers,
-            analysis: selectedAnalysis
-        })
-    })
-    .then(response => {
-        // Detect response payload structure type
-        const contentType = response.headers.get("content-type");
-        
-        if (contentType && contentType.includes("application/json")) {
-            // It is a STATS dict payload! Hide image element and fetch json array data
-            return response.json().then(result => {
-                if (graphImageElement) graphImageElement.style.display = 'none';
-                
-                if (result.status === "success") {
-                    renderAnalyticsTable(selectedAnalysis, result.data);
-                }
-            });
-        } else {
-            // It is a PLOTS binary image stream! Hide table container and generate Image object url
-            return response.blob().then(imageBlob => {
-                if (tableContainerElement) tableContainerElement.style.display = 'none';
-                
-                const objectURL = URL.createObjectURL(imageBlob);
-                if (graphImageElement) {
-                    graphImageElement.src = objectURL;
-                    graphImageElement.style.display = 'block';
-                }
-            });
-        }
-    })
-    .catch(error => console.error("Error fetching analysis stats:", error));
-}
 
 document.getElementById('runNumbers').addEventListener('click', async () => {
   // 1. Collect selected players
@@ -426,11 +386,13 @@ function formatDate(dateString) {
 // fetch data for players + graphs
 document.getElementById('loadData').addEventListener('click', async function() {
   const playerContainer = document.getElementById('playerContainer');
+  const sessionContainer = document.getElementById('sessionContainer');
   const graphContainer = document.getElementById('graphContainer');
 
   try {
     // 1. Show loading states
     playerContainer.innerHTML = 'Loading players...';
+    sessionContainer.innerHTML = 'Loading sessions...';
     graphContainer.innerHTML = 'Loading graphs...';
 
     const load = await fetch(`${RENDER_URL}/dataset/load`, {
@@ -450,6 +412,7 @@ document.getElementById('loadData').addEventListener('click', async function() {
     
     // Clear out placeholders completely
     playerContainer.innerHTML = '';
+    sessionContainer.innerHTML = '';
     graphContainer.innerHTML = '';
 
     // 3. Render Players Checkboxes (Pre-checking defaults)
@@ -459,6 +422,15 @@ document.getElementById('loadData').addEventListener('click', async function() {
       playerContainer.innerHTML += `
         <label style="display: block; margin-bottom: 4px;">
           <input type="checkbox" name="players" value="${player}" ${isChecked}> ${player}
+        </label>
+      `;
+    });
+
+    // Render Sessions Radio Buttons
+    data.sessions.forEach(session => {
+      sessionContainer.innerHTML += `
+        <label style="display: block; margin-bottom: 4px; cursor: pointer;">
+          <input type="radio" name="session" value="${session.id}"> ${session.id} (${session.date})
         </label>
       `;
     });
@@ -475,6 +447,7 @@ document.getElementById('loadData').addEventListener('click', async function() {
   } catch (error) {
     console.error('Error fetching data:', error);
     playerContainer.innerHTML = '<span style="color: #ff4d4d;">Failed to load players</span>';
+    sessionContainer.innerHTML = '<span style="color: #ff4d4d;">Failed to load sessions</span>';
     graphContainer.innerHTML = '<span style="color: #ff4d4d;">Failed to load options</span>';
   }
 });
@@ -530,24 +503,30 @@ const HEART_PATH = "M5 8.6 C5 8.6 1 5.7 1 3.1 C1 1.6 2.1 0.5 3.5 0.5 C4.4 0.5 5 
 /* ---------------- Init ---------------- */
 
 (async function init(){
-  try {
-    // Fetch roster from external endpoint on startup
-    const response = await fetch(`${RENDER_URL}/dataset/players`); // players from previous games
-    if (response.ok) {
-      roster = await response.json();
-    }
-  } catch (e) {
-    console.error("Could not load roster from server:", e);
-    roster = DEFAULT_PLAYERS;
-  }
-
+  // 1. Initialize roster with defaults immediately so the UI renders without waiting
+  roster = [...DEFAULT_PLAYERS];
   renderPlayerSlots();
 
+  // 2. Check for an existing in-progress game right away
   const existing = await storageGet('current-game');
-  if(existing && existing.players && existing.scores){
+  if (existing && existing.players && existing.scores) {
     showResumeBar(existing);
   }
 
+  // 3. Fetch updated roster from the backend asynchronously in the background
+  try {
+    const response = await fetch(`${RENDER_URL}/dataset/players`);
+    if (response.ok) {
+      const serverRoster = await response.json();
+      if (Array.isArray(serverRoster) && serverRoster.length > 0) {
+        roster = serverRoster;
+        // Re-render dropdowns with the complete player list from server
+        renderPlayerSlots(); 
+      }
+    }
+  } catch (e) {
+    console.error("Could not load roster from server, using default roster:", e);
+  }
 })();
 
 
@@ -763,10 +742,7 @@ function getRoundInputs(){
     parseInt(document.getElementById(`score-${i}`).textContent,10) || 0
   );
 }
-	
-function getRoundInputs_old(){
-  return game.players.map((p,i) => Math.max(0, parseInt(document.getElementById(`pts-${i}`).value) || 0));
-}
+
 
 function updateTotalBanner(){
   const rows = getRoundInputs();
@@ -792,14 +768,8 @@ function resetRoundInputs(){
   updateTotalBanner();
 }
 
-function resetRoundInputs_old(){
-  game.players.forEach((p,i) => {
-    document.getElementById(`pts-${i}`).value = 0;
-  });
-  updateTotalBanner();
-}
 
-	function changeScore(playerIndex, amount){
+function changeScore(playerIndex, amount){
   const score = document.getElementById(`score-${playerIndex}`);
 
   let value = parseInt(score.textContent,10) || 0;
@@ -821,7 +791,6 @@ async function commitRound(){
   if(sum !== ROUND_TOTAL) return;
   
   game.scores.push(rows);
-  await storageSet('current-game', game);
   
   const currentRoundNr = game.scores.length;
 
@@ -871,35 +840,12 @@ async function commitRound(){
 // Change this to your deployment URL from Google Apps Script
 const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxYcOv-iTh-QJyYF1pkNa90z0YSuR2lTFo2ZjnpHgyjD_xxLT9tU4UTRM8BScUSFeHU/exec";
 
-// Add playerScore as a parameter
-function generateRoundPayload(playerName, roundNumber, playerScore) {
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0'); 
-    const year = today.getFullYear();
-    const formattedDate = `${day}-${month}-${year}`;
-
-    const dealer = game.players[dealerIndex] || "Unknown Dealer";
-    const starter = game.players[starterIndex] || "Unknown Starter";
-
-    return {
-        date: formattedDate,
-        playerName: playerName, 
-        score: playerScore, // 👈 ADD THIS CRITICAL FIELD HERE
-        roundNr: roundNumber,
-        totalRounds: game.rounds,
-        orderOfPlay: game.players, 
-        dealer: dealer,
-        starter: starter
-    };
-}
-
-function sendRoundToSheets(payload) {
+function sendRoundToSheets(bulkPayload) {
     fetch(GOOGLE_SHEET_WEBAPP_URL, {
         method: "POST",
         mode: "cors",
         redirect: "follow", 
-        body: JSON.stringify(payload) // Remove custom headers if it complains, or leave standard
+        body: JSON.stringify(bulkPayload) // Remove custom headers if it complains, or leave standard
     })
     .then(res => console.log("Round data sent successfully"))
     .catch(err => console.error("Error logging round data:", err));
