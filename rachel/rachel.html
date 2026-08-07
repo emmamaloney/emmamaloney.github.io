@@ -184,8 +184,8 @@
           <span class="placeholder">No data loaded</span>
         </div>
 
-        <h3>Choose session</h3>
-        <div id="sessionContainer" class="session-buttons">
+        <h3>Choose filter</h3>
+        <div id="filterContainer" class="filter-buttons">
           <span class="placeholder">No data loaded</span>
         </div>
         
@@ -217,7 +217,7 @@ document.getElementById('runNumbers').addEventListener('click', async () => {
     document.querySelectorAll('input[name="players"]:checked')
   ).map(cb => cb.value);
 
-  const selectedSession = document.querySelector('input[name="session"]:checked')?.value || "-";
+  const selectedfilter = document.querySelector('input[name="filter"]:checked')?.value || "-";
 
   // 2. Collect selected analysis/graph option
   const selectedGraph = document.querySelector('input[name="graphType"]:checked')?.value;
@@ -239,7 +239,7 @@ document.getElementById('runNumbers').addEventListener('click', async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         players: selectedPlayers,
-        session: selectedSession,
+        filters: selectedfilter,
         analysis: selectedGraph
       })
     });
@@ -389,13 +389,13 @@ function formatDate(dateString) {
 // fetch data for players + graphs
 document.getElementById('loadData').addEventListener('click', async function() {
   const playerContainer = document.getElementById('playerContainer');
-  const sessionContainer = document.getElementById('sessionContainer');
+  const filterContainer = document.getElementById('filterContainer');
   const graphContainer = document.getElementById('graphContainer');
 
   try {
     // 1. Show loading states
     playerContainer.innerHTML = 'Loading players...';
-    sessionContainer.innerHTML = 'Loading sessions...';
+    filterContainer.innerHTML = 'Loading filters...';
     graphContainer.innerHTML = 'Loading graphs...';
 
     const load = await fetch(`${RENDER_URL}/dataset/load`, {
@@ -415,7 +415,7 @@ document.getElementById('loadData').addEventListener('click', async function() {
     
     // Clear out placeholders completely
     playerContainer.innerHTML = '';
-    sessionContainer.innerHTML = '';
+    filterContainer.innerHTML = '';
     graphContainer.innerHTML = '';
 
     // 3. Render Players Checkboxes (Pre-checking defaults)
@@ -429,20 +429,20 @@ document.getElementById('loadData').addEventListener('click', async function() {
       `;
     });
 
-    // Render Sessions Radio Buttons
-    data.sessions.forEach(session => {
-      sessionContainer.innerHTML += `
+    // Render filters Radio Buttons
+    data.filters.forEach(filter => {
+      filterContainer.innerHTML += `
         <label style="display: block; margin-bottom: 4px; cursor: pointer;">
-          <input type="checkbox" name="session" value="${session.id}" class="session-checkbox"> 
-          ${session.id} (${session.date})
+          <input type="checkbox" name="filter" value="${filter.id}" class="filter-checkbox"> 
+          ${filter.id} (${filter.date})
         </label>
       `;
     });
 
-    sessionContainer.querySelectorAll('.session-checkbox').forEach(checkbox => {
+    filterContainer.querySelectorAll('.filter-checkbox').forEach(checkbox => {
       checkbox.addEventListener('change', function() {
         if (this.checked) {
-          sessionContainer.querySelectorAll('.session-checkbox').forEach(cb => {
+          filterContainer.querySelectorAll('.filter-checkbox').forEach(cb => {
             if (cb !== this) cb.checked = false; // Uncheck other checkboxes
           });
         }
@@ -461,7 +461,7 @@ document.getElementById('loadData').addEventListener('click', async function() {
   } catch (error) {
     console.error('Error fetching data:', error);
     playerContainer.innerHTML = '<span style="color: #ff4d4d;">Failed to load players</span>';
-    sessionContainer.innerHTML = '<span style="color: #ff4d4d;">Failed to load sessions</span>';
+    filterContainer.innerHTML = '<span style="color: #ff4d4d;">Failed to load filters</span>';
     graphContainer.innerHTML = '<span style="color: #ff4d4d;">Failed to load options</span>';
   }
 });
