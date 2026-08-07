@@ -551,33 +551,6 @@ const HEART_PATH = "M5 8.6 C5 8.6 1 5.7 1 3.1 C1 1.6 2.1 0.5 3.5 0.5 C4.4 0.5 5 
 })();
 
 
-document.getElementById("generateGraph").onclick = async () => {
-
-  const players = [...document.querySelectorAll(
-      "#playerContainer input:checked"
-  )].map(x => x.value);
-
-  const graph = document.querySelector(".graph-btn.active").dataset.id;
-
-  const response = await fetch("/statistics/graph", {
-
-      method: "POST",
-
-      headers: {
-          "Content-Type": "application/json"
-      },
-
-      body: JSON.stringify({
-          players,
-          graph
-      })
-
-  });
-
-  document.getElementById("graphOutput").innerHTML =
-    await response.text();
-};
-
 function showResumeBar(existing){
   const slot = document.getElementById('resume-bar-slot');
   const roundsDone = existing.scores.length;
@@ -600,7 +573,6 @@ async function resumeGame(){
   document.getElementById('resume-bar-slot').innerHTML = '';
   document.getElementById('setup-view').style.display = 'none';
   document.getElementById('game-view').style.display = 'block';
-  document.getElementById('scoring-direction').value = game.direction || 'low';
   renderRoundEntry();
   renderBoard();
   renderChart();
@@ -675,7 +647,6 @@ function scoreCellBg(v){
 
 async function startGame(){
   const rounds = Math.max(1, parseInt(document.getElementById('rounds-input').value) || 8);
-  const direction = document.getElementById('scoring-direction').value;
   const names = [];
   const newNames = [];
 
@@ -701,7 +672,6 @@ async function startGame(){
   game = {
     players: names,
     rounds: rounds,
-    direction: direction,
     scores: [],
     archived: false,
     dealerIndex: dealerIndex, 
@@ -962,11 +932,11 @@ function rankColor(rank){
   return 'var(--rank-other)';
 }
 
-function computeRanks(totals, direction){
+function computeRanks(totals){
   return totals.map(t => {
     let better = 0;
     totals.forEach(other => {
-      if(direction === 'high' ? other > t : other < t) better++;
+      if(other < t) better++;
     });
     return better + 1;
   });
@@ -981,7 +951,7 @@ function renderBoard(){
   }
   boardCard.style.display = 'block';
   const { totals } = cumulativeTotals();
-  const ranks = computeRanks(totals, game.direction);
+  const ranks = computeRanks(totals);
 
   let head = `<thead><tr><th>R</th>${game.players.map(p => `<th>${nameLabelHtml(p)}</th>`).join('')}</tr></thead>`;
   let body = '<tbody>';
@@ -995,7 +965,7 @@ function renderBoard(){
   </tfoot>`;
 
   table.innerHTML = head + body + foot;
-  document.getElementById('scoring-note').textContent = game.direction === 'high' ? 'Highest total wins' : 'Lowest total wins';
+  document.getElementById('scoring-note').textContent = 'Lowest total wins';
 }
 
 /* ---------------- Round-progression chart ---------------- */
@@ -1069,7 +1039,7 @@ function buildLineChartSVG(series, labels, players){
 function showFinalCard(){
   document.getElementById('final-card').style.display = 'block';
   const { totals } = cumulativeTotals();
-  const best = game.direction === 'high' ? Math.max(...totals) : Math.min(...totals);
+  const best = Math.min(...totals);
   const winners = game.players.filter((p,i) => totals[i] === best);
   const summary = winners.length > 1
     ? `Tied for the win: ${winners.join(' & ')} with ${best} points.`
@@ -1087,7 +1057,6 @@ async function archiveCurrentGameIfNeeded(){
     id: Date.now(),
     players: game.players.slice(),
     roundsPlanned: game.rounds,
-    direction: game.direction,
     scores: game.scores.map(r => r.slice()),
     completed: game.scores.length >= game.rounds
   });
@@ -1104,7 +1073,6 @@ async function loadAllGamesForSummary(){
       id: 'current',
       players: game.players.slice(),
       roundsPlanned: game.rounds,
-      direction: game.direction,
       scores: game.scores.map(r => r.slice()),
       completed: false
     });
@@ -1136,7 +1104,7 @@ async function renderGameHistoryList(){
         <div class="history-meta">
           <div class="history-date">${dateStr}${g.completed ? '' : ' · unfinished'}</div>
           <div class="history-players">${playersStr}</div>
-          <div class="history-sub">${g.scores.length} round${g.scores.length===1?'':'s'} · ${g.direction==='high'?'highest wins':'lowest wins'}</div>
+          <div class="history-sub">${g.scores.length} round${g.scores.length===1?'':'s'} · lowest wins</div>
         </div>
         <button class="history-delete" onclick="deleteGameFromHistory(${g.id})" aria-label="Delete this game" title="Delete this game">✕</button>
       </div>
