@@ -239,7 +239,7 @@ document.getElementById('runNumbers').addEventListener('click', async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         players: selectedPlayers,
-        filters: selectedfilter,
+        filter: selectedfilter,
         analysis: selectedGraph
       })
     });
