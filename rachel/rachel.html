@@ -217,6 +217,8 @@ document.getElementById('runNumbers').addEventListener('click', async () => {
     document.querySelectorAll('input[name="players"]:checked')
   ).map(cb => cb.value);
 
+  const selectedSession = document.querySelector('input[name="session"]:checked')?.value || "-";
+
   // 2. Collect selected analysis/graph option
   const selectedGraph = document.querySelector('input[name="graphType"]:checked')?.value;
 
@@ -237,6 +239,7 @@ document.getElementById('runNumbers').addEventListener('click', async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         players: selectedPlayers,
+        session: selectedSession,
         analysis: selectedGraph
       })
     });
@@ -430,9 +433,20 @@ document.getElementById('loadData').addEventListener('click', async function() {
     data.sessions.forEach(session => {
       sessionContainer.innerHTML += `
         <label style="display: block; margin-bottom: 4px; cursor: pointer;">
-          <input type="radio" name="session" value="${session.id}"> ${session.id} (${session.date})
+          <input type="checkbox" name="session" value="${session.id}" class="session-checkbox"> 
+          ${session.id} (${session.date})
         </label>
       `;
+    });
+
+    sessionContainer.querySelectorAll('.session-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        if (this.checked) {
+          sessionContainer.querySelectorAll('.session-checkbox').forEach(cb => {
+            if (cb !== this) cb.checked = false; // Uncheck other checkboxes
+          });
+        }
+      });
     });
 
     // 4. Render Graph/Stat Options (Corrected container to graphContainer)
