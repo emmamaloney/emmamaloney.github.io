@@ -1,0 +1,104 @@
+<!-- certain code / elements that have been removed -->
+
+
+<!-- ---------- Roster code from rachel.html -------------------------------------- -->
+.modal-overlay{
+position:fixed;inset:0;background:rgba(11,61,119,0.45);
+display:none;align-items:center;justify-content:center;z-index:50;padding:20px;
+}
+.modal-overlay.show{display:flex;}
+.modal{background:#fff;border-radius:var(--radius);padding:26px;max-width:420px;width:100%;box-shadow:var(--shadow);border:1px solid var(--panel-border);}
+.modal h3{font-family:'Roboto',serif;margin:0 0 14px;font-size:20px;color:var(--ink);}
+
+.roster-list{list-style:none;margin:0 0 16px;padding:0;max-height:220px;overflow-y:auto;}
+.roster-list li{
+display:flex;justify-content:space-between;align-items:center;
+padding:8px 4px;border-bottom:1px dashed rgba(23,50,77,0.15);font-size:14.5px;
+}
+.roster-list li button{background:none;border:none;color:var(--bad);cursor:pointer;font-size:13px;}
+.add-row{display:flex;gap:8px;margin-bottom:6px;}
+.add-row input{flex:1;}
+.close-modal{margin-top:14px;width:100%;}
+
+<div class="modal-overlay" id="roster-modal">
+  <div class="modal">
+    <h3>Saved players</h3>
+    <ul class="roster-list" id="roster-list"></ul>
+    <div class="add-row">
+      <input type="text" id="new-roster-name" placeholder="Add a player name">
+      <button class="btn btn-primary btn-small" onclick="addRosterNameFromModal()">Add</button>
+    </div>
+    <button class="btn btn-ghost close-modal" onclick="closeRosterModal()">Close</button>
+  </div>
+</div>
+
+<!-- Old button to manage players-->
+<!-- <button class="roster-link" onclick="openRosterModal()">Manage players</button> -->
+
+/* ---------------- Roster modal ---------------- */
+function openRosterModal(){
+  renderRosterList();
+  document.getElementById('roster-modal').classList.add('show');
+}
+function closeRosterModal(){
+  document.getElementById('roster-modal').classList.remove('show');
+  renderPlayerSlots();
+}
+/* ---------------- Updated Roster List Renderer ---------------- */
+async function renderRosterList() {
+  // 1. Correctly target and declare the structural layout DOM reference upfront
+  const listElement = document.getElementById('roster-list');
+  if (!listElement) return;
+
+  let playerNames = [];
+
+  try {
+    // 2. Fetch the unique array from your FastAPI cards_analytics server
+    const response = await fetch(`${RENDER_URL}/dataset/players`, {
+      method: 'GET'
+    });
+    
+    if (response.ok) {
+      // Server returns a flat array of strings, e.g., ["Al", "Camilla", "Casper", "Emma"]
+      playerNames = await response.json(); 
+    } else {
+      throw new Error("Server response failed, falling back to local roster state.");
+    }
+  } catch (e) {
+    console.warn("Fetch failed:", e);
+    // Fallback to your local user state array variable if the server is offline
+    playerNames = typeof roster !== 'undefined' ? roster : [];
+  }
+  
+  // 3. Render placeholder message if no players exist anywhere
+  if (playerNames.length === 0) {
+    listElement.innerHTML = '<li style="color:#8a806a;">No saved players yet.</li>';
+    return;
+  }
+  
+  listElement.innerHTML = playerNames.map((name, index) => `
+    <li>
+      ${escapeHtml(name)} 
+    </li>
+  `).join('');
+  // remove roster name: <button onclick="removeRosterName(${index})">Remove</button>
+  
+}
+
+async function addRosterNameFromModal(){
+  const input = document.getElementById('new-roster-name');
+  const name = input.value.trim();
+  if(!name) return;
+  if(!roster.includes(name)){
+    roster.push(name);
+    await storageSet('roster', roster);
+  }
+  input.value = '';
+  renderRosterList();
+}
+
+async function removeRosterName(i){
+  roster.splice(i,1);
+  await storageSet('roster', roster);
+  renderRosterList();
+}

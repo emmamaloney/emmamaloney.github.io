@@ -1,10 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
+  
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rachel</title>
+<title>Rachel – card game</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="rachel-styling.css">
 
 <!--
 <link href="https://fonts.googleapis.com/css2?family=Roboto:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -17,423 +21,37 @@
 <link rel="shortcut icon" href="/rachel/favicon.ico" />
 <link rel="apple-touch-icon" sizes="180x180" href="/rachel/apple-touch-icon.png" />
 <meta name="apple-mobile-web-app-title" content="rachel" />
-	
 
-<!-- ----------------------------------- CSS ---------------------------------- -->
-<style>
-  :root{
-    --bg: #FFFFFF;
-
-    --ink: #16324E;
-    --ink-soft: #5B7186;
-    --panel-border: #DCE7F5;
-    --blue: #1E90FF;
-    --blue-dark: #0B3D77;
-    --blue-pale: #EAF3FF;
-
-    /* score classification colours */
-    --good: #2E9B58;
-    --warn: #E0972B;
-    --bad: #D64545;
-
-    /* rank colours */ 
-    --gold: #D4AF37;
-    --silver: #AEB4BB;
-    --bronze: #CD7F32;
-    --rank-other: #33404D;
-
-    /* design choices */
-    --radius: 10px;
-    --shadow: 0 10px 26px rgba(23,50,77,0.10);
-  }
-
-  * {
-    box-sizing:border-box;
-  }
-  
-  html, body {
-    margin:0;
-    padding:0;
-  }
-  
-  body {
-    min-height:100vh;
-    background:
-      radial-gradient(circle at 12% 0%, rgba(30,144,255,0.07), transparent 45%),
-      radial-gradient(circle at 100% 100%, rgba(11,61,119,0.06), transparent 45%),
-      var(--bg);
-    background-color:var(--bg);
-    font-family:'Inter', sans-serif;
-    color:var(--ink);
-    padding:32px 16px 80px;
-  }
-  
-  .wrap {
-    max-width:880px;
-    margin:0 auto;
-  }
-
-  /* Score after every round */
-  .score-display {
-    display:inline-block;
-    min-width:3rem;
-    text-align:center;
-    font-size:1.4rem;
-    font-weight:700;
-    padding:.25rem .5rem;
-  }
-
-  /* Buttons for +1, +5, +10 – score after every round */
-  .score-buttons {
-    display:flex;
-    gap:.4rem;
-    flex-wrap:wrap;
-  }
-	
-  header.masthead {
-    display:flex;align-items:center;justify-content:space-between;
-    margin-bottom:24px;
-    color:var(--ink);
-    flex-wrap:wrap;
-    gap:16px;
-  }
-  
-  .brand {
-    display:flex;
-    align-items:center;
-    gap:14px;
-  }
-
-  .pip-index {
-    width:52px;height:68px;background:var(--blue-dark);border-radius:6px;
-    box-shadow: var(--shadow);
-    position:relative;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    font-family:'Roboto', serif;
-    color:#fff;
-    line-height:1;
-    transform:rotate(-4deg);
-    border:1px solid rgba(11,61,119,0.4);
-  }
-  .pip-index .q{font-size:20px;font-weight:700;}
-  .pip-index svg{width:20px;height:20px;margin-top:2px;}
-  .brand h1{
-    font-family:'Roboto', serif;
-    font-size:clamp(28px,4vw,38px);
-    font-weight:600;
-    margin:0;
-    letter-spacing:0.2px;
-  }
-  .brand p{margin:2px 0 0;font-size:13px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;letter-spacing:0.5px;}
-  .roster-link{
-    background:transparent;border:1px solid var(--panel-border);color:var(--ink-soft);
-    padding:8px 14px;border-radius:999px;font-size:13px;cursor:pointer;
-    font-family:'Inter',sans-serif;transition:all .15s ease;
-  }
-  .roster-link:hover{border-color:var(--blue);color:var(--blue-dark);}
-
-  .tab-bar{display:flex;gap:8px;margin-bottom:20px;}
-  .tab-btn{
-    font-family:'Inter',sans-serif;font-weight:600;font-size:14px;
-    padding:10px 22px;border-radius:999px;border:1px solid var(--panel-border);
-    background:#fff;color:var(--ink-soft);cursor:pointer;transition:all .15s ease;
-  }
-  .tab-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
-  .tab-btn:hover:not(.active){border-color:var(--blue);color:var(--blue-dark);}
-
-  .mode-toggle{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
-  .mode-btn{
-    font-family:'Inter',sans-serif;font-weight:600;font-size:12.5px;
-    padding:7px 14px;border-radius:999px;border:1px solid var(--panel-border);
-    background:#fff;color:var(--ink-soft);cursor:pointer;transition:all .15s ease;
-  }
-  .mode-btn.active{background:var(--blue-dark);border-color:var(--blue-dark);color:#fff;}
-  .mode-btn:hover:not(.active){border-color:var(--blue);color:var(--blue-dark);}
-
-  .card{
-    background:#FFFFFF;
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
-    padding:28px;
-    margin-bottom:24px;
-    position:relative;
-    border:1px solid var(--panel-border);
-  }
-  .card::before{
-    content:"";
-    position:absolute;inset:8px;
-    border:1px dashed rgba(23,50,77,0.14);
-    border-radius:6px;
-    pointer-events:none;
-  }
-  .card h2{
-    font-family:'Roboto', serif;
-    font-size:22px;font-weight:600;margin:0 0 4px;
-    color:var(--ink);
-  }
-  .card .sub{color:var(--ink-soft);font-size:14px;margin:0 0 20px;}
-
-  label.field-label{
-    display:block;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;
-    color:var(--ink-soft);margin-bottom:6px;font-weight:600;
-  }
-  .row-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
-  input[type=number], select, input[type=text]{
-    width:100%;padding:10px 12px;border-radius:6px;border:1px solid var(--panel-border);
-    background:#F7FAFF;font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--ink);
-  }
-  input[type=text]{font-family:'Inter',sans-serif;}
-  select{font-family:'Inter',sans-serif;}
-  input:focus, select:focus{outline:2px solid var(--blue);outline-offset:1px;}
-
-  .stepper{display:flex;align-items:center;gap:10px;}
-  .stepper button{
-    width:36px;height:36px;border-radius:50%;border:1px solid var(--panel-border);
-    background:#F7FAFF;font-size:18px;cursor:pointer;color:var(--ink);
-    display:flex;align-items:center;justify-content:center;
-  }
-  .stepper button:hover{background:var(--blue-pale);}
-  .stepper .val{font-family:'IBM Plex Mono',monospace;font-size:18px;min-width:28px;text-align:center;}
-
-  .player-slots{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px;}
-  @media (max-width:560px){.player-slots{grid-template-columns:1fr;} .row-2{grid-template-columns:1fr;}}
-
-  /* ----- Buttons ---------------- */
-  .btn{
-    font-family:'Inter',sans-serif;font-weight:600;font-size:14.5px;
-    padding:12px 22px;border-radius:8px;border:none;cursor:pointer;
-    transition:transform .1s ease, box-shadow .15s ease;
-  }
-  .btn-primary{background:var(--blue);color:#fff;box-shadow:0 4px 0 var(--blue-dark);}
-  .btn-primary:hover{transform:translateY(-1px);}
-  .btn-primary:active{transform:translateY(2px);box-shadow:0 1px 0 var(--blue-dark);}
-  .btn-primary:disabled{background:#B9C4CE;box-shadow:0 4px 0 #94A3AF;cursor:not-allowed;transform:none;}
-  
-  .btn-ghost{background:transparent;border:1px solid var(--panel-border);color:var(--ink);}
-  .btn-ghost:hover{background:var(--blue-pale);}
-  
-  .btn-danger{background:#fff;border:1px solid rgba(214,69,69,0.5);color:var(--bad);}
-  .btn-danger:hover{background:rgba(214,69,69,0.08);}
-  
-  .btn-small{padding:7px 14px;font-size:13px;}
-
-  /* */
-  .round-banner{
-    display:flex;align-items:center;justify-content:space-between;
-    color:var(--ink);margin-bottom:18px;flex-wrap:wrap;gap:10px;
-  }
-  .round-banner .r-title{font-family:'Roboto',serif;font-size:22px;font-weight:600;}
-  .round-banner .r-sub{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink-soft);}
-
-  table.score-input{width:100%;border-collapse:collapse;margin-bottom:8px;}
-  table.score-input th{
-    text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:0.06em;
-    color:var(--ink-soft);padding:0 8px 8px;font-weight:600;
-  }
-  table.score-input td{padding:8px;border-top:1px dashed rgba(23,50,77,0.15);}
-  table.score-input tr:first-child td{border-top:none;}
-  .p-name{font-family:'Roboto',serif;font-size:16px;font-weight:600;color:var(--ink);}
-  .pts-input{width:160px;}
-
-  .total-banner{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:14px 16px;border-radius:8px;margin:14px 0 18px;
-    font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:15px;
-    border:1px solid transparent;
-  }
-  .total-banner.ok{background:rgba(46,155,88,0.12);color:var(--good);border-color:rgba(46,155,88,0.35);}
-  .total-banner.bad{background:rgba(214,69,69,0.10);color:var(--bad);border-color:rgba(214,69,69,0.3);}
-
-
-  .placeholder {
-    color: #888;
-    font-style: italic;
-  }
-  .actions-row{display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap;}
-
-  .scoreboard-wrap{overflow-x:auto;}
-  table.board{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:14px;min-width:420px;}
-  table.board th, table.board td{padding:9px 12px;text-align:center;}
-  table.board thead th{
-    font-family:'Inter',sans-serif;font-weight:700;font-size:12.5px;text-transform:uppercase;
-    letter-spacing:0.04em;color:var(--ink-soft);border-bottom:2px solid var(--ink);
-  }
-  table.board thead th:first-child{text-align:left;}
-  table.board td:first-child{text-align:left;color:var(--ink-soft);font-family:'Inter',sans-serif;font-size:13px;}
-  table.board tbody tr td:not(:first-child){border-radius:4px;}
-  table.board tfoot td{border-top:2px solid var(--ink);font-weight:700;background:rgba(30,144,255,0.10);}
-  table.board tfoot tr.rank-row td{border-top:1px dashed rgba(23,50,77,0.2);background:#fff;padding-top:10px;padding-bottom:10px;}
-
-  .name-short{display:none;}
-  .rank-badge{
-    display:inline-flex;align-items:center;justify-content:center;
-    width:28px;height:28px;border-radius:50%;color:#fff;font-weight:700;font-size:13px;
-    box-shadow:0 2px 4px rgba(0,0,0,0.25);
-  }
-
-  .hidden {
-    display: none;
-  }
-
-  .role-badges{display:inline-flex;gap:6px;margin-left:8px;vertical-align:middle;}
-  .role-badge{
-    display:inline-flex;align-items:center;gap:4px;
-    font-family:'Inter',sans-serif;font-weight:700;font-size:10.5px;
-    text-transform:uppercase;letter-spacing:0.04em;
-    padding:3px 9px;border-radius:999px;line-height:1.4;
-    white-space:nowrap;
-  }
-  .role-badge.dealer{background:var(--blue-dark);color:#fff;}
-  .role-badge.starter{background:var(--blue-pale);color:var(--blue-dark);border:1px solid var(--blue);}
-
-  @media (max-width:600px){
-    table.board{min-width:0;font-size:12.5px;}
-    table.board th, table.board td{padding:6px 4px;}
-    .name-full{display:none;}
-    .name-short{display:inline;}
-    .rank-badge{width:24px;height:24px;font-size:11.5px;}
-  }
-
-  .empty-note{color:var(--ink-soft);font-size:14px;text-align:center;padding:24px 0;}
-
-  .top-controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:10px;}
-  .scoring-note{font-size:12.5px;color:var(--ink-soft);}
-
-  #chart svg, #summary-chart svg{width:100%;height:auto;display:block;}
-  #chart .grid-line, #summary-chart .grid-line{stroke:rgba(23,50,77,0.12);stroke-width:1;}
-  #chart .axis-line, #summary-chart .axis-line{stroke:rgba(23,50,77,0.4);stroke-width:1.2;}
-  #chart .axis-label, #summary-chart .axis-label{font-family:'IBM Plex Mono',monospace;font-size:11px;fill:var(--ink-soft);}
-  #chart .series-line{fill:none;stroke-width:2.5;}
-  #chart .series-point{stroke:#fff;stroke-width:1.5;}
-  .chart-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;justify-content:center;}
-  .chart-legend .item{display:flex;align-items:center;gap:6px;font-size:13px;font-family:'Inter',sans-serif;color:var(--ink-soft);}
-  .chart-legend .swatch{width:12px;height:12px;border-radius:3px;display:inline-block;}
-
-  .history-list{list-style:none;margin:0;padding:0;}
-  .history-item{
-    display:flex;justify-content:space-between;align-items:center;gap:12px;
-    padding:12px 4px;border-bottom:1px dashed rgba(23,50,77,0.15);
-  }
-  .history-item:last-child{border-bottom:none;}
-  .history-meta{flex:1;min-width:0;}
-  .history-date{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-soft);margin-bottom:3px;}
-  .history-players{font-size:14px;color:var(--ink);font-weight:600;overflow-wrap:break-word;}
-  .history-sub{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
-  .history-delete{
-    flex-shrink:0;width:32px;height:32px;border-radius:50%;border:1px solid rgba(214,69,69,0.4);
-    background:#fff;color:var(--bad);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;
-    touch-action:pan-y;
-  }
-  .history-delete:hover{background:rgba(214,69,69,0.1);}
-
-  .history-item-wrap{position:relative;overflow:hidden;border-bottom:1px dashed rgba(23,50,77,0.15);}
-  .history-item-wrap:last-child{border-bottom:none;}
-  .history-item-wrap .swipe-bg{
-    position:absolute;inset:0;background:var(--bad);color:#fff;display:flex;align-items:center;justify-content:flex-end;
-    padding-right:18px;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;
-  }
-  .history-item-wrap .history-item{
-    position:relative;background:#fff;transition:transform .18s ease;touch-action:pan-y;
-  }
-
-  .modal-overlay{
-    position:fixed;inset:0;background:rgba(11,61,119,0.45);
-    display:none;align-items:center;justify-content:center;z-index:50;padding:20px;
-  }
-  .modal-overlay.show{display:flex;}
-  .modal{background:#fff;border-radius:var(--radius);padding:26px;max-width:420px;width:100%;box-shadow:var(--shadow);border:1px solid var(--panel-border);}
-  .modal h3{font-family:'Roboto',serif;margin:0 0 14px;font-size:20px;color:var(--ink);}
-  .roster-list{list-style:none;margin:0 0 16px;padding:0;max-height:220px;overflow-y:auto;}
-  .roster-list li{
-    display:flex;justify-content:space-between;align-items:center;
-    padding:8px 4px;border-bottom:1px dashed rgba(23,50,77,0.15);font-size:14.5px;
-  }
-  .roster-list li button{background:none;border:none;color:var(--bad);cursor:pointer;font-size:13px;}
-  .add-row{display:flex;gap:8px;margin-bottom:6px;}
-  .add-row input{flex:1;}
-  .close-modal{margin-top:14px;width:100%;}
-
-  .hint{font-size:12.5px;color:var(--ink-soft);margin-top:-10px;margin-bottom:16px;}
-  .resume-bar{
-    background:var(--blue-pale);border:1px solid rgba(30,144,255,0.35);
-    color:var(--ink);padding:12px 16px;border-radius:8px;margin-bottom:18px;
-    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;font-size:14px;
-  }
-  .resume-bar .btn{padding:8px 16px;font-size:13px;}
-
-  /* Clean, professional styling for the summary tables */
-  .stats-table-wrapper {
-      margin-bottom: 30px;
-      background: #ffffff;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-      padding: 20px;
-  }
-  .stats-table-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #2c3e50;
-      margin-bottom: 15px;
-      border-bottom: 2px solid #ecf0f1;
-      padding-bottom: 8px;
-  }
-  .analytics-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-  }
-  .analytics-table th {
-      background-color: #f8f9fa;
-      color: #495057;
-      font-weight: 600;
-      padding: 12px;
-      border-bottom: 2px solid #dee2e6;
-  }
-  .analytics-table td {
-      padding: 12px;
-      border-bottom: 1px solid #dee2e6;
-      color: #495057;
-  }
-  .analytics-table tr:hover {
-      background-color: #f1f3f5;
-  }
-  .flex-tables {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-  }
-  .flex-tables .stats-table-wrapper {
-      flex: 1;
-      min-width: 300px;
-  }
-</style>
-
-<!-- ------------------------------ HTML -------------------------------- -->
 </head>
+<!-- ------------------------------ HTML -------------------------------- -->
 <body>
 <div class="wrap">
-
+  
   <header class="masthead">
     <div class="brand">
-      <div class="pip-index">
-        <span class="q">Q</span>
+      <div class="rachel-logo"> <!-- Queen of Spades -->
+        <span class="q">Q</span> <!-- Q for Queen -->
         <svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2C9 7 3 10.5 3 15.2 3 18.4 5.6 21 8.8 21c1.4 0 2.7-.5 3.7-1.4-.3 1.6-1.2 2.7-2.5 3.4h4c-1.3-.7-2.2-1.8-2.5-3.4 1 .9 2.3 1.4 3.7 1.4C18.4 21 21 18.4 21 15.2 21 10.5 15 7 12 2z"/></svg>
       </div>
+      
       <div>
         <h1>Rachel</h1>
         <p>13 CARDS · ROUND TOTAL 33 · Q♠ = 10 PTS</p>
       </div>
     </div>
-    <button class="roster-link" onclick="openRosterModal()">Manage players</button>
+
+    <a href="/about.html"> <!-- link back to my website -->
+      <button class="return-btn" onclick="history.back()">Return to main website</button>
+    </a>
   </header>
 
-  <nav class="tab-bar">
+  <nav class="tab-bar"> <!-- navigation tabs: play & summary -->
     <button class="tab-btn active" id="tab-btn-play" onclick="showTab('play')">Play</button>
     <button class="tab-btn" id="tab-btn-summary" onclick="showTab('summary')">Summary</button>
   </nav>
 
+  <!-- -------------- PLAY TAB ----------------------------------------------------- -->
   <div id="play-tab">
-
     <div id="resume-bar-slot"></div>
 
     <section id="setup-view" class="card">
@@ -456,39 +74,13 @@
       </div>
 
       <label class="field-label">Players (in order)</label>
-      <div class="hint">Pick from your saved roster, or type a new name — it'll be saved for next time.</div>
+      <div class="hint">Pick from previous players, or type a new name — it'll be saved for next time.</div>
       <div class="player-slots" id="player-slots"></div>
-
-		<!-- Your comment here 
-      <label class="field-label">Winner is decided by</label>
-      <div class="row-2" style="margin-bottom:12px;">
-        <div>
-          <select id="scoring-direction">
-            <option value="low">Lowest total (penalty scoring)</option>
-            <option value="high">Highest total</option>
-          </select>
-        </div>
-        <div></div>
--->
-<div style="display:none;">
-  <label class="field-label">Winner is decided by</label>
-  <div class="row-2" style="margin-bottom:12px;">
-    <div>
-      <select id="scoring-direction">
-        <option value="low" selected>Lowest total (penalty scoring)</option>
-        <option value="high">Highest total</option>
-      </select>
-    </div>
-    <div></div>
-  </div>
-</div>
-		  
-
-
 
       <div class="actions-row">
         <button class="btn btn-primary" onclick="startGame()">Deal in — start game</button>
       </div>
+
     </section>
 
     <section id="game-view" style="display:none;">
@@ -548,6 +140,7 @@
 
 
   <!-- -------------- SUMMARY TAB ----------------------------------------------------- -->
+
   <div id="summary-tab" style="display:none;">
     <div class="card">
       <h2>All-time summary</h2>
@@ -603,19 +196,6 @@
         </div>
       </div>
     </div>
-  </div>
-
-</div>
-
-<div class="modal-overlay" id="roster-modal">
-  <div class="modal">
-    <h3>Saved players</h3>
-    <ul class="roster-list" id="roster-list"></ul>
-    <div class="add-row">
-      <input type="text" id="new-roster-name" placeholder="Add a player name">
-      <button class="btn btn-primary btn-small" onclick="addRosterNameFromModal()">Add</button>
-    </div>
-    <button class="btn btn-ghost close-modal" onclick="closeRosterModal()">Close</button>
   </div>
 </div>
 
@@ -724,6 +304,8 @@ document.getElementById('runNumbers').addEventListener('click', async () => {
   }
 });
 
+
+
 function renderStatsTable(analysisType, data) {
     const container = document.getElementById('stats-container');
     container.innerHTML = ''; // Clear previous contents
@@ -765,7 +347,7 @@ function renderStatsTable(analysisType, data) {
         if (data.worst_games && data.worst_games.length > 0) {
             htmlContent += `
                 <div class="stats-table-wrapper">
-                    <div class="stats-table-title">Worst Scoring Games</div>
+                    <div class="stats-table-title">Worst Games</div>
                     <table class="analytics-table">
                         <thead>
                             <tr>
@@ -1206,8 +788,6 @@ ${game.players.map((p,i) => `
 
 
 
-
-
 function getRoundInputs(){
   return game.players.map((p,i) =>
     parseInt(document.getElementById(`score-${i}`).textContent,10) || 0
@@ -1320,7 +900,6 @@ async function commitRound(){
 
 // Change this to your deployment URL from Google Apps Script
 const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxYcOv-iTh-QJyYF1pkNa90z0YSuR2lTFo2ZjnpHgyjD_xxLT9tU4UTRM8BScUSFeHU/exec";
-
 
 // Add playerScore as a parameter
 function generateRoundPayload(playerName, roundNumber, playerScore) {
@@ -1787,76 +1366,6 @@ function buildBarChartSVG(rows, mode){
   return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="max-width:${W}px;margin:0 auto;">${grid}${axis}${bars}</svg>`;
 }
 
-/* ---------------- Roster modal ---------------- */
-function openRosterModal(){
-  renderRosterList();
-  document.getElementById('roster-modal').classList.add('show');
-}
-function closeRosterModal(){
-  document.getElementById('roster-modal').classList.remove('show');
-  renderPlayerSlots();
-}
-/* ---------------- Updated Roster List Renderer ---------------- */
-async function renderRosterList() {
-  // 1. Correctly target and declare the structural layout DOM reference upfront
-  const listElement = document.getElementById('roster-list');
-  if (!listElement) return;
-
-  let playerNames = [];
-
-  try {
-    // 2. Fetch the unique array from your FastAPI cards_analytics server
-    const response = await fetch(`${RENDER_URL}/dataset/players`, {
-      method: 'GET'
-    });
-    
-    if (response.ok) {
-      // Server returns a flat array of strings, e.g., ["Al", "Camilla", "Casper", "Emma"]
-      playerNames = await response.json(); 
-    } else {
-      throw new Error("Server response failed, falling back to local roster state.");
-    }
-  } catch (e) {
-    console.warn("Fetch failed:", e);
-    // Fallback to your local user state array variable if the server is offline
-    playerNames = typeof roster !== 'undefined' ? roster : [];
-  }
-  
-  // 3. Render placeholder message if no players exist anywhere
-  if (playerNames.length === 0) {
-    listElement.innerHTML = '<li style="color:#8a806a;">No saved players yet.</li>';
-    return;
-  }
-  
-  listElement.innerHTML = playerNames.map((name, index) => `
-    <li>
-      ${escapeHtml(name)} 
-    </li>
-  `).join('');
-  // remove roster name: <button onclick="removeRosterName(${index})">Remove</button>
-  
-}
-
-async function addRosterNameFromModal(){
-  const input = document.getElementById('new-roster-name');
-  const name = input.value.trim();
-  if(!name) return;
-  if(!roster.includes(name)){
-    roster.push(name);
-    await storageSet('roster', roster);
-  }
-  input.value = '';
-  renderRosterList();
-}
-
-// Remove roster name, currently getting from dataset
-/* 
-async function removeRosterName(i){
-  roster.splice(i,1);
-  await storageSet('roster', roster);
-  renderRosterList();
-}
-*/
 </script>
 </body>
 </html>
