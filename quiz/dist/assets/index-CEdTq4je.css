@@ -1,0 +1,1 @@
+:root{--bg:#fff;--bg-nav:#9b4e4e;--main-font:arial}.header{background-color:var(--bg-nav)}.bottom-nav{background-color:var(--bg-nav);z-index:1000;border-top:1px solid #ccc;justify-content:space-around;align-items:center;height:60px;display:flex;position:fixed;bottom:0;left:0;right:0}.pub-card{border:#ccc}
