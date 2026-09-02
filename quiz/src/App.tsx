@@ -23,12 +23,19 @@ export default function App() {
   const [isHostMode, setIsHostMode] = useState(false) // trying to log in as host?
   const [authLoading, setAuthLoading] = useState(false) // "is supabase currently doing something?"
 
-  // Password Reset View States
+  // Password View States
   const [isForgotPassword, setIsForgotPassword] = useState(false)
   const [isResettingPassword, setIsResettingPassword] = useState(false)
+  const [isCreatingPassword, setIsCreatingPassword] = useState(false)
 
   // var to check if user exists, and if so, if it is a host
-  const isHost = user?.user_metadata?.is_host === true
+  const [isHost, setIsHost] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  // admin inviting emails
+  const [inviteEmail, setInviteEmail] = useState('')
+  const [inviteLoading, setInviteLoading] = useState(false)
+
 
   // Load local session automatically on startup + listen for changes
   useEffect(() => {
@@ -38,15 +45,22 @@ export default function App() {
     })
 
     // Listen for auth events (including password recovery link clicks)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null)
-
-      // If user clicked the reset link in their email
-      if (event === 'PASSWORD_RECOVERY') {
-        setCurrentScreen('profile')
-        setIsResettingPassword(true)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        const currentUser = session?.user ?? null
+    
+        setUser(currentUser)
+    
+        if (event === 'SIGNED_IN' && currentUser) {
+          await loadProfile(currentUser.id)
+        }
+    
+        if (event === 'PASSWORD_RECOVERY') {
+          setCurrentScreen('profile')
+          setIsResettingPassword(true)
+        }
       }
-    })
+    )
 
     return () => subscription.unsubscribe()
   }, [])
@@ -98,16 +112,73 @@ export default function App() {
         })
 
         
-        if (signUpError) alert(signUpError.message) // if cannot sign up alert w. message
-        else alert('Player account created and logged in!')
+        if (signUpError) {
+          alert(signUpError.message) // if cannot sign up alert w. message
+        } 
+        else {
+          alert('Player account created and logged in!')
+        }
       } 
 
       // general error
       else { 
         alert(signInError.message)
       }
+      
     }
+    
     setAuthLoading(false)
+  }
+
+  async function inviteHost() {
+    setInviteLoading(true)
+  
+    const { data, error } = await supabase.functions.invoke('invite-host', {
+      body: { email: inviteEmail }
+    })
+  
+    console.log('Function data:', data)
+    console.log('Function error:', error)
+  
+    if (error) {
+      console.log('Error context:', error.context)
+  
+      if (error.context) {
+        console.log('Response:', await error.context.text())
+      }
+  
+      alert('Function failed — check console')
+    } else {
+      alert('Invitation sent!')
+      setInviteEmail('')
+    }
+  
+    setInviteLoading(false)
+  }
+  
+
+  async function loadProfile(userId: string) {
+    console.log('Loading profile for:', userId)
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('is_host, is_admin, pending_invite')
+      .eq('id', userId)
+      .single()
+  
+    if (error) {
+      console.error(error)
+      return
+    }
+    
+    console.log('Profile data:', data)
+  
+    setIsHost(data.is_host)
+    setIsAdmin(data.is_admin)
+  
+    if (data.pending_invite) {
+      setCurrentScreen('profile')
+      setIsCreatingPassword(true)
+    }
   }
 
   // Request Password Reset Email
@@ -135,7 +206,7 @@ export default function App() {
     setAuthLoading(true)
 
     // update user's password (encrypted)
-    const { error } = await supabase.auth.updateUser({
+    const { error } = await supabase.auth.updateUser({ // auth.users
       password: newPassword,
     })
 
@@ -149,6 +220,31 @@ export default function App() {
 
     setAuthLoading(false)
   }
+
+  // Update Password (after clicking reset link)
+  async function handleCreatePassword(e: React.SubmitEvent) {
+    e.preventDefault()
+    setAuthLoading(true)
+  
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        pending_invite: false, // invite no longer pending, confirmed
+        is_host: true // host confirmed
+      })
+      .eq('id', user.id)
+  
+    if (error) {
+      alert(error.message)
+    } else {
+      alert('Password created successfully! Welcome!')
+      setIsCreatingPassword(false)
+      setNewPassword('')
+    }
+  
+    setAuthLoading(false)
+  }
+
 
   // Handle Logout
   async function handleLogout() {
@@ -205,7 +301,31 @@ export default function App() {
       {currentScreen === 'profile' && (
         <main>
           {/* VIEW 1: User clicked password recovery link in email */}
-          {isResettingPassword ? (
+          {isCreatingPassword ? (
+            <div className="auth-container">
+              <h2>Create New Password</h2>
+              <p>Welcome to QuizLeague! Please create a password for your account.</p>
+
+              <form onSubmit={handleCreatePassword} className="auth-form">
+                <input
+                  type="password"
+                  placeholder="New password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="auth-input"
+                  required
+                />
+
+                <button
+                  type="submit"
+                  className="auth-submit-btn"
+                  disabled={authLoading}
+                >
+                  {authLoading ? 'Creating...' : 'Create Password'}
+                </button>
+              </form>
+            </div>
+          ) : isResettingPassword ? (
             <div className="auth-container">
               <h2>Set New Password</h2>
               <form onSubmit={handleUpdatePassword} className="auth-form">
@@ -227,7 +347,32 @@ export default function App() {
             <div className="profile-container">
               <h2>Profile</h2>
               <p>Email: <strong>{user.email}</strong></p>
-              <p>Account Type: <strong>{isHost ? 'Quiz Host' : 'Player'}</strong></p>
+              <p>
+                Account Type: <strong>
+                  {isAdmin ? 'Admin' : isHost ? 'Quiz Host' : 'Player'}
+                </strong>
+              </p>
+              {isAdmin && (
+                <div>
+                  <h3>Invite Host</h3>
+
+                  <input
+                    type="email"
+                    placeholder="Host email"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    className="auth-input"
+                  />
+
+                  <button
+                    onClick={inviteHost}
+                    disabled={inviteLoading}
+                    className="auth-submit-btn"
+                  >
+                    {inviteLoading ? 'Sending...' : 'Invite Host'}
+                  </button>
+                </div>
+              )}
               <button onClick={handleLogout} className="auth-submit-btn">
                 Log Out
               </button>
@@ -339,7 +484,13 @@ export default function App() {
         </button>
         <button
           className={`nav-button ${currentScreen === 'profile' ? 'active' : ''}`}
-          onClick={() => setCurrentScreen('profile')}
+          onClick={() => {
+            setCurrentScreen('profile')
+
+            if (user) {
+              loadProfile(user.id)
+            }
+          }}
         >
           Profile
         </button>
