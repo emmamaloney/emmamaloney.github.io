@@ -5,6 +5,11 @@
   --main-font: arial;
 }
 
+.logo {
+  background-color: var(--bg-nav);
+  align-items: center;
+}
+
 .header {
   background-color: var(--bg-nav);
 }
@@ -21,10 +26,6 @@
   justify-content: space-around;
   align-items: center;
   z-index: 1000;
-}
-
-.pub-card {
-  border: #cccccc;
 }
 
 .app-container {
@@ -50,6 +51,8 @@
   flex-direction: column;
   gap: 12px;
 }
+
+/* LOGIN/SIGNUP ------------------------------------ */
 
 .auth-form {
   display: flex;
@@ -83,4 +86,6 @@
   cursor: pointer;
   font-size: 0.9rem;
 }
+
+/* --------------------------------------------- */
 

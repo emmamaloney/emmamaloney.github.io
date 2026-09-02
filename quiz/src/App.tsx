@@ -8,12 +8,22 @@ type Pub = {
   city: string
 }
 
+type Quiz = {
+  id: number
+  pub_id: number
+  name: string
+  time: string
+  date: string
+}
+
 // available screens
-type Screen = 'home' |'pubs' | 'leaderboard' | 'play' | 'profile'
+type Screen = 'quizzes' |'pubs' | 'leaderboard' | 'play' | 'profile'
 
 export default function App() {
   const [pubs, updatePubs] = useState<Pub[]>([]) // creates object to store pubs (array of Pub-objects)
-  const [currentScreen, setCurrentScreen] = useState<Screen>('home')
+  const [quizzes, updateQuizzes] = useState<Quiz[]>([])
+
+  const [currentScreen, setCurrentScreen] = useState<Screen>('quizzes')
 
   // define Authentication States (React watches useState)
   const [user, setUser] = useState<any>(null) // CHANGE LATER W. "TYPE" - who is currently logged in
@@ -80,6 +90,27 @@ export default function App() {
     }
     loadPubs()
   }, [])
+
+  useEffect(() => {
+    async function loadQuizzes() { // load data from supabase to pubs Pub-object
+      const { data, error } = await supabase
+        .from('quizzes')
+        .select('*')
+
+      if (error) {
+        console.error(error)
+        return // do nothing if cannot load pubs (empty list)
+      }
+      updateQuizzes(data)
+    }
+    loadQuizzes()
+  }, [])
+
+  // Place this inside your App component, before the return statement
+  const getPubName = (pubId: number) => {
+    const pub = pubs.find((p) => p.id === pubId)
+    return pub ? pub.name : 'Unknown Pub'
+  }
 
   // Player Combined Login / Sign Up Handler + Host login
   async function handleCombinedAuth(e: React.SubmitEvent) { // async to wait (supabase comm.), e=browser's event
@@ -256,15 +287,20 @@ export default function App() {
     <div>
       {/* HEADER */}
       <header>
-        <h1>QuizLeague</h1>
+        <h1 className='logo'>QuizLeague</h1>
         <p>Come for the quiz. Stay for the competition.</p>
       </header>
 
-      {/* SCREEN 1: HOME */}
-      {currentScreen === 'home' && (
+      {/* SCREEN 1: QUIZZES */}
+      {currentScreen === 'quizzes' && (
         <main>
-          <h2>Home</h2>
-          <p>User settings coming soon...</p>
+          <h2>Quizzes</h2>
+          {quizzes.map((quiz) => (
+            <div key={quiz.id} className="pub-card">
+              <strong>{quiz.name}</strong>
+              <p>Location: {getPubName(quiz.pub_id)}</p>
+            </div>
+          ))}
         </main>
       )}
 
@@ -459,10 +495,10 @@ export default function App() {
       {/* FIXED BOTTOM NAVBAR */}
       <nav className="bottom-nav">
         <button
-          className={`nav-button ${currentScreen === 'home' ? 'active' : ''}`}
-          onClick={() => setCurrentScreen('home')}
+          className={`nav-button ${currentScreen === 'quizzes' ? 'active' : ''}`}
+          onClick={() => setCurrentScreen('quizzes')}
         >
-          Home
+          Quizzes
         </button>
         <button
           className={`nav-button ${currentScreen === 'pubs' ? 'active' : ''}`}
