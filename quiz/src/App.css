@@ -1,0 +1,30 @@
+:root {
+  --bg: #ffffff;
+  --bg-nav: #9b4e4e;
+
+  --main-font: arial;
+}
+
+.header {
+  background-color: var(--bg-nav);
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: var(--bg-nav);
+  border-top: 1px solid #cccccc;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1000;
+}
+
+.pub-card {
+  border: #cccccc;
+}
+
+
