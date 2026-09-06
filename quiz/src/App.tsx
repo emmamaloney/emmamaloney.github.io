@@ -65,6 +65,7 @@ export default function App() {
         setUser(currentUser)
   
         if (event === 'SIGNED_IN' && currentUser) {
+          console.log('LOAD PROFILE FROM: SIGNED_IN')
           await loadProfile(currentUser.id)
         }
   
@@ -198,9 +199,11 @@ export default function App() {
       .select('is_host, is_admin, pending_invite')
       .eq('id', userId)
       .single()
+
+    console.log('PROFILE RESPONSE:', { data, error })
   
     if (error) {
-      console.error(error)
+      console.error('Profile error:', error)
       return
     }
     
@@ -210,6 +213,7 @@ export default function App() {
     setIsAdmin(data.is_admin)
   
     if (data.pending_invite) {
+      console.log('PENDING INVITE → SHOW CREATE PASSWORD')
       setCurrentScreen('profile')
       setIsCreatingPassword(true)
     }
@@ -557,6 +561,7 @@ export default function App() {
             setCurrentScreen('profile')
 
             if (user) {
+              console.log('LOAD PROFILE FROM: PROFILE BUTTON')
               loadProfile(user.id)
             }
           }}
