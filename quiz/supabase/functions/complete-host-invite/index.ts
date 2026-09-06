@@ -89,6 +89,8 @@ Deno.serve(async (req) => {
       )
     }
 
+    console.log("try to update profile data")
+
     // Complete the invitation.
     // The user cannot choose these values themselves.
     const { error: updateError } =
