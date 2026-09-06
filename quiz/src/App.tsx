@@ -51,14 +51,8 @@ export default function App() {
   // Load local session automatically on startup + listen for changes
   useEffect(() => {
     // Check initial session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      const currentUser = session?.user ?? null
-  
-      setUser(currentUser)
-  
-      if (currentUser) {
-        await loadProfile(currentUser.id)
-      }
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null) // set session user if there is one
     })
   
     // Listen for auth changes
