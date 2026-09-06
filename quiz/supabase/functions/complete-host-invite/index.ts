@@ -56,7 +56,7 @@ Deno.serve(async (req) => {
     // Check that this user actually has a pending host invitation
     const { data: profile, error: profileError } =
       await supabaseAdmin
-        .from("profiles")
+        .from("user_management")
         .select("pending_invite, is_host, is_admin")
         .eq("id", user.id)
         .single()
@@ -95,7 +95,7 @@ Deno.serve(async (req) => {
     // The user cannot choose these values themselves.
     const { error: updateError } =
       await supabaseAdmin
-        .from("profiles")
+        .from("user_management")
         .update({
           pending_invite: false,
           is_host: true,

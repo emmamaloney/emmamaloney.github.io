@@ -195,7 +195,7 @@ export default function App() {
   async function loadProfile(userId: string) {
     console.log('Loading profile for:', userId)
     const { data, error } = await supabase
-      .from('profiles')
+      .from('user_management')
       .select('is_host, is_admin, pending_invite')
       .eq('id', userId)
       .single()

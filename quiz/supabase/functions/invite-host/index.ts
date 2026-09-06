@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
 
   const { error: profileError } =
     await supabaseAdmin
-      .from("profiles")
+      .from("user_management")
       .insert({
         id: data.user.id,
         is_host: false,
