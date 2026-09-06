@@ -266,10 +266,11 @@ export default function App() {
     e.preventDefault()
     setAuthLoading(true)
   
-    // Actually create the Auth password
-    const { error: passwordError } = await supabase.auth.updateUser({
-      password: newPassword,
-    })
+    // 1. Create the user's password
+    const { error: passwordError } =
+      await supabase.auth.updateUser({
+        password: newPassword,
+      })
   
     if (passwordError) {
       alert(passwordError.message)
@@ -277,25 +278,27 @@ export default function App() {
       return
     }
   
-    // Mark invitation as completed
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .update({
-        pending_invite: false,
-        is_host: true,
-      })
-      .eq('id', user.id)
+    // 2. Tell the backend to complete the host invitation
+    const { data, error } =
+      await supabase.functions.invoke(
+        'complete-host-invite'
+      )
   
-    if (profileError) {
-      alert(profileError.message)
+    if (error) {
+      console.error(error)
+      alert('Could not complete host invitation.')
       setAuthLoading(false)
       return
     }
   
+    console.log(data)
+  
+    // 3. Update the UI
     alert('Password created successfully! Welcome!')
   
     setIsCreatingPassword(false)
     setNewPassword('')
+    setIsHost(true)
     setCurrentScreen('profile')
   
     setAuthLoading(false)
