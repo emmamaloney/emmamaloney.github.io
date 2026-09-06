@@ -20,6 +20,7 @@ type Quiz = {
 type Screen = 'quizzes' |'pubs' | 'leaderboard' | 'play' | 'profile'
 
 export default function App() {
+
   const [pubs, updatePubs] = useState<Pub[]>([]) // creates object to store pubs (array of Pub-objects)
   const [quizzes, updateQuizzes] = useState<Quiz[]>([])
 
@@ -50,28 +51,36 @@ export default function App() {
   // Load local session automatically on startup + listen for changes
   useEffect(() => {
     // Check initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null) // set session user if there is one
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      const currentUser = session?.user ?? null
+  
+      setUser(currentUser)
+  
+      if (currentUser) {
+        await loadProfile(currentUser.id)
+      }
     })
-
-    // Listen for auth events (including password recovery link clicks)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+  
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         const currentUser = session?.user ?? null
-    
+  
         setUser(currentUser)
-    
+  
         if (event === 'SIGNED_IN' && currentUser) {
           await loadProfile(currentUser.id)
         }
-    
+  
         if (event === 'PASSWORD_RECOVERY') {
           setCurrentScreen('profile')
           setIsResettingPassword(true)
         }
       }
     )
-
+  
     return () => subscription.unsubscribe()
   }, [])
 
@@ -257,21 +266,37 @@ export default function App() {
     e.preventDefault()
     setAuthLoading(true)
   
-    const { error } = await supabase
+    // Actually create the Auth password
+    const { error: passwordError } = await supabase.auth.updateUser({
+      password: newPassword,
+    })
+  
+    if (passwordError) {
+      alert(passwordError.message)
+      setAuthLoading(false)
+      return
+    }
+  
+    // Mark invitation as completed
+    const { error: profileError } = await supabase
       .from('profiles')
       .update({
-        pending_invite: false, // invite no longer pending, confirmed
-        is_host: true // host confirmed
+        pending_invite: false,
+        is_host: true,
       })
       .eq('id', user.id)
   
-    if (error) {
-      alert(error.message)
-    } else {
-      alert('Password created successfully! Welcome!')
-      setIsCreatingPassword(false)
-      setNewPassword('')
+    if (profileError) {
+      alert(profileError.message)
+      setAuthLoading(false)
+      return
     }
+  
+    alert('Password created successfully! Welcome!')
+  
+    setIsCreatingPassword(false)
+    setNewPassword('')
+    setCurrentScreen('profile')
   
     setAuthLoading(false)
   }
@@ -321,6 +346,8 @@ export default function App() {
       {currentScreen === 'play' && (
         <main>
           <h2>Play</h2>
+          <h3>Scan QR Code</h3>
+          <h3>Enter Pub Code</h3>
           <p>User settings coming soon...</p>
         </main>
       )}
