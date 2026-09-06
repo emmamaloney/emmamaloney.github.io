@@ -265,25 +265,33 @@ export default function App() {
   async function handleCreatePassword(e: React.SubmitEvent) {
     e.preventDefault()
     setAuthLoading(true)
+    console.log('1. Creating password...')
   
     // 1. Create the user's password
-    const { error: passwordError } =
+    const {data: passwordData, error: passwordError } =
       await supabase.auth.updateUser({
         password: newPassword,
       })
-  
+
+    console.log('PASSWORD RESULT:', passwordData)
+    console.log('PASSWORD ERROR:', passwordError)
+
     if (passwordError) {
       alert(passwordError.message)
       setAuthLoading(false)
       return
     }
   
+    console.log('2. Completing host invitation...')
     // 2. Tell the backend to complete the host invitation
     const { data, error } =
       await supabase.functions.invoke(
         'complete-host-invite'
       )
-  
+    
+    console.log('FUNCTION DATA:', data)
+    console.log('FUNCTION ERROR:', error)
+
     if (error) {
       console.error(error)
       alert('Could not complete host invitation.')
