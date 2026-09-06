@@ -263,6 +263,7 @@ export default function App() {
 
   // Update Password (after clicking reset link)
   async function handleCreatePassword(e: React.SubmitEvent) {
+    console.log('CREATE PASSWORD CLICKED')
     e.preventDefault()
     setAuthLoading(true)
     console.log('1. Creating password...')
