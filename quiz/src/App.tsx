@@ -47,6 +47,9 @@ export default function App() {
   const [inviteEmail, setInviteEmail] = useState('')
   const [inviteLoading, setInviteLoading] = useState(false)
 
+  const [displayName, setDisplayName] = useState("");
+  const [birthday, setBirthday] = useState("");
+  const [saving, setSaving] = useState(false);
 
   // Load local session automatically on startup + listen for changes
   useEffect(() => {
@@ -95,6 +98,7 @@ export default function App() {
     loadPubs()
   }, [])
 
+  // Load quizzes
   useEffect(() => {
     async function loadQuizzes() { // load data from supabase to pubs Pub-object
       const { data, error } = await supabase
@@ -110,11 +114,6 @@ export default function App() {
     loadQuizzes()
   }, [])
 
-  // Place this inside your App component, before the return statement
-  const getPubName = (pubId: number) => {
-    const pub = pubs.find((p) => p.id === pubId)
-    return pub ? pub.name : 'Unknown Pub'
-  }
 
   // Player Combined Login / Sign Up Handler + Host login
   async function handleCombinedAuth(e: React.SubmitEvent) { // async to wait (supabase comm.), e=browser's event
@@ -194,29 +193,47 @@ export default function App() {
 
   async function loadProfile(userId: string) {
     console.log('Loading profile for:', userId)
-    const { data, error } = await supabase
+    
+    // User management data
+    const { data: managementData, error: managementError } = await supabase
       .from('user_management')
       .select('is_host, is_admin, pending_invite')
       .eq('id', userId)
       .single()
 
-    console.log('PROFILE RESPONSE:', { data, error })
+    console.log('Management RESPONSE:', { managementData, managementError })
   
-    if (error) {
-      console.error('Profile error:', error)
+    if (managementError) {
+      console.error('Management error:', managementError)
       return
     }
-    
-    console.log('Profile data:', data)
+    console.log('Management data:', managementData)
   
-    setIsHost(data.is_host)
-    setIsAdmin(data.is_admin)
+    setIsHost(managementData.is_host)
+    setIsAdmin(managementData.is_admin)
   
-    if (data.pending_invite) {
+    if (managementData.pending_invite) {
       console.log('PENDING INVITE → SHOW CREATE PASSWORD')
       setCurrentScreen('profile')
       setIsCreatingPassword(true)
     }
+
+    // User profile data
+    const { data: profileData, error: profileError } = await supabase
+    .from('user_profiles')
+    .select('display_name, birthday')
+    .eq('id', userId)
+    .single()
+
+  console.log('USER PROFILE RESPONSE:', { profileData, profileError })
+
+  if (profileError) {
+    console.error('User profile error:', profileError)
+    return
+  }
+
+  setDisplayName(profileData.display_name || '')
+  setBirthday(profileData.birthday || '')
   }
 
   // Request Password Reset Email
@@ -312,12 +329,56 @@ export default function App() {
   }
 
 
+  const calculateAge = (birthday: string) => {
+    const birthDate = new Date(birthday);
+    const today = new Date();
+  
+    let age = today.getFullYear() - birthDate.getFullYear();
+  
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+  
+    if (
+      monthDifference < 0 ||
+      (monthDifference === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+  
+    return age;
+  };
+
+  const saveProfile = async () => {
+    if (!user) return;
+  
+    setSaving(true);
+  
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({
+        display_name: displayName,
+        birthday: birthday,
+      })
+      .eq("id", user.id);
+  
+    setSaving(false);
+  
+    if (error) {
+      alert(error.message);
+    }
+  };
+
   // Handle Logout
   async function handleLogout() {
     await supabase.auth.signOut()
     setUser(null) 
   }
 
+  // Place this inside your App component, before the return statement
+  const getPubName = (pubId: number) => {
+    const pub = pubs.find((p) => p.id === pubId)
+    return pub ? pub.name : 'Unknown Pub'
+  }
+    
   return (
     <div>
       {/* HEADER */}
@@ -415,17 +476,22 @@ export default function App() {
                 </button>
               </form>
             </div>
-          ) : user ? (
-            /* VIEW 2: Logged In */
+          ) : user /* VIEW 2: Logged In */ ? (
             <div className="profile-container">
-              <h2>Profile</h2>
+              <h2>
+                Profile
+              </h2>
+              <h3>
+                {displayName || "Your Name"}
+                {birthday && `, ${calculateAge(birthday)}`}
+              </h3>
               <p>Email: <strong>{user.email}</strong></p>
               <p>
                 Account Type: <strong>
                   {isAdmin ? 'Admin' : isHost ? 'Quiz Host' : 'Player'}
                 </strong>
               </p>
-              {isAdmin && (
+              {/* Admin page */isAdmin && (
                 <div>
                   <h3>Invite Host</h3>
 
@@ -446,12 +512,28 @@ export default function App() {
                   </button>
                 </div>
               )}
+              <label>Display name</label>
+              <input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+              />
+
+              <label>Birthday</label>
+              <input
+                type="date"
+                value={birthday}
+                onChange={(e) => setBirthday(e.target.value)}
+              />
+
+              <button onClick={saveProfile} disabled={saving}>
+                {saving ? "Saving..." : "Save"}
+              </button>
               <button onClick={handleLogout} className="auth-submit-btn">
                 Log Out
               </button>
             </div>
-          ) : isForgotPassword ? (
-            /* VIEW 3: Forgot Password Request Form */
+          ) : /* VIEW 3: Forgot Password Request Form */ isForgotPassword ? (
             <div className="auth-container">
               <h2>Reset Password</h2>
               <p>Enter your email to receive a password reset link.</p>
@@ -476,8 +558,7 @@ export default function App() {
                 ← Back to Login
               </button>
             </div>
-          ) : (
-            /* VIEW 4: Normal Login/Signup Form */
+          ) : /* VIEW 4: Normal Login/Signup Form */ (
             <div className="auth-container">
               <h2>{isHostMode ? 'Host Portal' : 'Player Portal'}</h2>
               <p>
