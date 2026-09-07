@@ -348,22 +348,34 @@ export default function App() {
   };
 
   const saveProfile = async () => {
-    if (!user) return;
+    if (!user) {
+      console.log("NO USER")
+      return
+    }
+
+    console.log("USER ID:", user.id)
+    console.log("DISPLAY NAME:", displayName)
+    console.log("BIRTHDAY:", birthday)
   
     setSaving(true);
   
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("user_profiles")
       .update({
         display_name: displayName,
         birthday: birthday,
       })
       .eq("id", user.id);
-  
+
+    console.log("UPDATE DATA:", data)
+    console.log("UPDATE ERROR:", error)
+
     setSaving(false);
   
     if (error) {
-      alert(error.message);
+      alert(error.message)
+    } else {
+      alert("Profile saved!")
     }
   };
 
