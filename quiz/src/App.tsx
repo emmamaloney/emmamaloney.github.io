@@ -231,7 +231,7 @@ export default function App() {
     .from('user_profiles')
     .select('display_name, birthday')
     .eq('id', userId)
-    .single()
+    .maybeSingle()
 
   console.log('USER PROFILE RESPONSE:', { profileData, profileError })
 
@@ -240,8 +240,13 @@ export default function App() {
     return
   }
 
-  setDisplayName(profileData.display_name || '')
-  setBirthday(profileData.birthday || '')
+  if (profileData) {
+    setDisplayName(profileData.display_name || '')
+    setBirthday(profileData.birthday || '')
+  } else {
+    console.log('No user profile exists yet')
+    setDisplayName('')
+    setBirthday('')
   }
 
   // Request Password Reset Email
@@ -679,4 +684,4 @@ export default function App() {
       </nav>
     </div>
   )
-}
+}}
