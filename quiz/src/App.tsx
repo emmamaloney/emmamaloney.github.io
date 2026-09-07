@@ -200,8 +200,6 @@ export default function App() {
       .select('is_host, is_admin, pending_invite')
       .eq('id', userId)
       .single()
-
-    console.log('Management RESPONSE:', { managementData, managementError })
   
     if (managementError) {
       console.error('Management error:', managementError)
@@ -541,7 +539,6 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => {
-                  alert("BUTTON CLICKED")
                   console.log("SAVE BUTTON CLICKED")
                   saveProfile()
                 }}
