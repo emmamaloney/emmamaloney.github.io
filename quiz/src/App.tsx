@@ -538,7 +538,15 @@ export default function App() {
                 onChange={(e) => setBirthday(e.target.value)}
               />
 
-              <button onClick={saveProfile} disabled={saving}>
+              <button
+                type="button"
+                onClick={() => {
+                  alert("BUTTON CLICKED")
+                  console.log("SAVE BUTTON CLICKED")
+                  saveProfile()
+                }}
+                disabled={saving}
+              >
                 {saving ? "Saving..." : "Save"}
               </button>
               <button onClick={handleLogout} className="auth-submit-btn">
