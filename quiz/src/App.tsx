@@ -53,33 +53,43 @@ export default function App() {
 
   // Load local session automatically on startup + listen for changes
   useEffect(() => {
-    // Check initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null) // set session user if there is one
-    })
+    console.log('AUTH EFFECT STARTED')
   
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        const currentUser = session?.user ?? null
+        console.log('AUTH EVENT:', event)
+        console.log('AUTH SESSION:', session)
   
+        const currentUser = session?.user ?? null
         setUser(currentUser)
+  
+        if (event === 'PASSWORD_RECOVERY') {
+          console.log('PASSWORD RECOVERY DETECTED')
+  
+          setCurrentScreen('profile')
+          setIsResettingPassword(true)
+  
+          return
+        }
   
         if (event === 'SIGNED_IN' && currentUser) {
           console.log('LOAD PROFILE FROM: SIGNED_IN')
           await loadProfile(currentUser.id)
         }
-  
-        if (event === 'PASSWORD_RECOVERY') {
-          setCurrentScreen('profile')
-          setIsResettingPassword(true)
-        }
       }
     )
   
-    return () => subscription.unsubscribe()
+    // Check existing session AFTER listener is registered
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('INITIAL SESSION:', session)
+      setUser(session?.user ?? null)
+    })
+  
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [])
 
   // Load pubs for pubs list rendering
