@@ -168,10 +168,11 @@ h3 {
 
 .fibonacci-part1 {
     flex: 38.2%; /* smaller Fibonacci part (golden ratio) */
-    max-width: 50vw;
+    max-width: 38.2%;
 }
 
 .fibonacci-img {
+    max-width: 100%;
     border-radius: var(--radius);
 }
 
@@ -185,6 +186,9 @@ h3 {
     .fibonacci-layout {
         flex-direction: column; /* hamburger stacking on phone */
         align-items: center; 
+    }
+    .fibonacci-part1 {
+        max-width: 50%;
     }
 }
 
