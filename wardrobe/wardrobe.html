@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en"> <!-- webpage's content is in English -->
+
+<head>
+    <title>Emma Maloney – Wardrobe</title> <!-- title on tab -->
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- to make browser render at devices size -->
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="../assets/css/all.min.css">
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="../assets/css/album.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Xanh+Mono:ital@0;1&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- header + nav -->
+    <header class="header-design sticky-top py-2 shadow-sm"> <!-- Bootstrap sticky top -->
+        <div class="container d-flex align-items-center justify-content-between">
+            <a href="index.html" class="logo text-decoration-none text-nowrap">Emma Maloney</a> <!-- logo which acts as home button -->
+            
+            <!-- for mobile nav menu -->
+            <input type="checkbox" id="menu-toggle"> <!-- hidden checkbox -->
+            <label class="hamburger" for="menu-toggle">☰</label> <!-- hamburger toggle -->
+
+            <!-- nav menu with page links -->
+            <nav class="nav-menu">
+                <ul class="d-flex list-unstyled gap-3 m-0">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="credentials.html">Credentials</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section> <!-- section to be able to style margins better -->
+            <h1>Wardrobe analysis</h1>
+        </section>
+
+        <section>
+            <h2>Includes:</h2> 
+            <div class="badge-collection"> <!-- all badges -->
+                <span class="badge badge-design">Python</span>
+                <span class="badge badge-design">Pandas</span>
+            </div>
+        </section>
+
+        <section>
+            <h2>Overview</h2> 
+            <p>Exploratory data analysis of my personal wardrobe, using Google Sheets data to summarise statistics and find trends in item characteristics, purchasing habits, and financial value.</p>
+        </section>
+
+        <section>
+            <h2>Methodology</h2> 
+            <ol>
+                <li>Import data from Google Sheets into a Pandas dataframe.</li>
+                <li>Clean, standardise, and transform the data using Python.</li>
+            </ol>
+        </section>
+
+        
+    </main>
+    
+    <!-- footer used on every page -->
+    <footer class="footer-design border-top py-2"> <!-- class for additional styling -->
+        <div class="container"> 
+            <div class="d-flex justify-content-between align-items-center text-nowrap"> <!-- div to structure elements on a row -->
+                <p class="m-0">&copy; 2026 Emma Maloney</p> <!-- copyright -->
+                <a href="#"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i>Back to top</a>  <!-- back to top via link and empty id tag, + icon name not announced by screen readers --> 
+            </div>
+            <ul class="d-flex list-unstyled m-0 gap-3 mt-1"> <!-- contact links with flexbox styling, below other content -->
+                <li><a href="mailto:emma.maloney.work@gmail.com">Email</a></li>
+                <li><a href="https://www.linkedin.com/in/emma-maloney-92b212228" target="_blank">LinkedIn</a></li><!-- opens new tab -->
+                <li><a href="https://github.com/emmamaloney" target="_blank">GitHub</a></li> <!-- opens new tab -->
+            </ul> 
+        </div>
+    </footer>
+</body>
+</html>
